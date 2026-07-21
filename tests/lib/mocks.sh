@@ -62,9 +62,10 @@ mock_add_vm() {
   echo "$3" > "$MOCK_STATE/$2"
 }
 
-# mock_add_ct <node> <ctid> <conf-body>
+# mock_add_ct <node> <ctid> <running|stopped> <conf-body>
 mock_add_ct() {
-  printf '%s\n' "$3" > "$MOCK_PVE/nodes/$1/lxc/$2.conf"
+  printf '%s\n' "$4" > "$MOCK_PVE/nodes/$1/lxc/$2.conf"
+  echo "$3" > "$MOCK_STATE/$2"
 }
 
 # Find a guest's config file by id across all nodes (ids are cluster-unique).
@@ -106,9 +107,16 @@ pct() {
   case "$sub" in
     list) echo "VMID Status Lock Name"; ls "$MOCK_PVE"/nodes/*/lxc/*.conf 2>/dev/null \
             | sed -E 's#.*/([0-9]+)\.conf#\1 running - guest#' ;;
+    status)  echo "status: $(cat "$MOCK_STATE/$1" 2>/dev/null || echo stopped)" ;;
+    start)   echo "START $1" >> "$MOCK_CALLS"; echo running > "$MOCK_STATE/$1" ;;
+    shutdown)
+      local id="$1"; shift
+      echo "SHUTDOWN $id [$*]" >> "$MOCK_CALLS"
+      # --forceStop guarantees the container ends up stopped (graceful or forced).
+      echo stopped > "$MOCK_STATE/$id" ;;
     move-volume)
       local id="$1" key="$2"; shift 2
-      echo "MOVE-VOL $id $key [$*]" >> "$MOCK_CALLS"
+      echo "MOVE-VOL $id $key [$*] running=$(cat "$MOCK_STATE/$id" 2>/dev/null)" >> "$MOCK_CALLS"
       sed -i -E "s#^($key: )Neohosting:#\1TN01SSD1600-NeoHosting:#" "$(_mock_find_conf "$id")"; return 0 ;;
     *) return 0 ;;
   esac
@@ -133,13 +141,15 @@ ssh() {
 export -f qm pct ssh _mock_find_conf
 
 # mock_run <args...>  — run the script against the fake tree, returning its
-# stdout+stderr. Path-redirects /etc/pve to the fake tree.
+# stdout+stderr. Path-redirects /etc/pve to the fake tree. Defaults -s/-t to
+# the storage names every test's mock_add_storage sets up (the script itself
+# has no built-in defaults); pass -s/-t again to override.
 mock_run() {
   local redir="$MOCK_ROOT/mig.sh"
   sed -e 's#/etc/pve#'"$MOCK_PVE"'#g' \
       -e 's#/var/log/migrate-disks-#'"$MOCK_ROOT"'/var/log/migrate-disks-#g' \
       "$SCRIPT_UNDER_TEST" > "$redir"
-  bash "$redir" "$@" 2>&1
+  bash "$redir" -s Neohosting -t TN01SSD1600-NeoHosting "$@" 2>&1
 }
 
 # --- tiny assertion helpers ------------------------------------------------

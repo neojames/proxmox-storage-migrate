@@ -48,13 +48,20 @@ an env with the `mock_add_*` helpers, call `mock_run <args>`, and assert with
 4. **Execution** goes through `run_on <node> …`: direct locally, over SSH for
    remote nodes (`ssh_node` resolves the node IP from `/etc/pve/.members` and
    uses `-o HostKeyAlias=<node> -o StrictHostKeyChecking=accept-new`).
-5. **Deferred phase** (`process_deferred_tpm`) handles `tpmstate` on running VMs
-   when `-S` is set: after the main pass, shut down (graceful then force), move
-   as raw, restart — concurrently.
+5. **Deferred phases** move volumes that can't move on a live guest, after the
+   main pass, concurrently:
+   - **Phase 2** (`process_deferred_tpm`) handles `tpmstate` on running VMs
+     when `-S` is set: shut down (graceful then force), move as raw, restart.
+   - **Phase 3** (`process_deferred_ct`) handles running containers
+     unconditionally (no flag): a container's volumes can only move while it's
+     stopped, so `process_unit` defers the *whole guest* (not per-volume) the
+     moment it sees the container running; phase 3 shuts it down (graceful then
+     force), moves every one of its volumes in order, then restarts it.
 6. **Verification** re-reads the guest config and confirms the volume now points
    at the target storage.
 7. **Aggregation** sums per-guest result files (`results/` and
-   `results-deferred/`) into the final Success/Failed/Skipped/Raw-fallback line.
+   `results-deferred/`, the latter shared by both deferred phases) into the
+   final Success/Failed/Skipped/Raw-fallback line.
 
 ## Invariants — don't break these
 
@@ -66,6 +73,11 @@ an env with the `mock_add_*` helpers, call `mock_run <args>`, and assert with
 - **QCOW2 only on file storages.** Block types downgrade to raw up front;
   keep the per-disk runtime fallback (`is_format_error`).
 - **Containers never take `--format`.**
+- **A running container's volumes always defer to phase 3.** Unlike VM disks
+  (which move live) or tpmstate (opt-in via `-S`), container storage can only
+  move while the container is stopped, so this isn't optional — no flag gates
+  it, and it must defer the entire guest, not move some volumes live and defer
+  others.
 - **Discovery/verification stay SSH-free** (read `/etc/pve`); only mutating
   operations and status checks use `run_on`.
 

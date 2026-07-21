@@ -17,7 +17,7 @@ scsi0: Neohosting:vm-100-disk-0,size=10G
 ide2: none,media=cdrom
 [snap1]
 scsi0: Neohosting:vm-100-disk-0,size=10G'
-mock_add_ct pve1 200 \
+mock_add_ct pve1 200 stopped \
 'hostname: app
 rootfs: Neohosting:subvol-200-disk-0,size=8G
 mp0: Neohosting:subvol-200-disk-1,mp=/data,size=50G

@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+### Changed
+- Container volumes now always move offline: a running container's storage
+  can't move live, so `migrate-disks.sh` shuts it down (graceful, then
+  force), migrates every one of its volumes, and restarts it — deferred to a
+  concurrent phase after the main pass, the same way TPM state is handled for
+  VMs. This happens unconditionally (no flag), since it's required rather
+  than optional.
+
 ## [1.0.0]
 Initial release. A single Bash tool to bulk-migrate Proxmox VE guest storage.
 

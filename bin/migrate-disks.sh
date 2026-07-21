@@ -7,7 +7,10 @@
 #   * VM disks convert to QCOW2 (auto-falling back to raw on block storage).
 #   * tpmstate volumes are forced raw (never qcow2) and, since they can only
 #     move while stopped, are skipped on running VMs unless -S is given.
-#   * Container volumes move as-is (pct has no format option).
+#   * Container volumes move as-is (pct has no format option). A container's
+#     volumes can only move while it's stopped, so a running container is
+#     always deferred: stopped (graceful, then forced), all its volumes
+#     moved, then restarted. This happens regardless of -S.
 #
 # Scope:
 #   * Default: this node only.
@@ -23,8 +26,8 @@
 # Run this ON a Proxmox host as root.
 #
 # Usage: ./migrate-disks.sh [options]
-#   -s <storage>  Source storage        (default: Neohosting)
-#   -t <storage>  Target storage         (default: TN01SSD1600-NeoHosting)
+#   -s <storage>  Source storage
+#   -t <storage>  Target storage
 #   -f <format>   Preferred VM format     (default: qcow2; auto-falls back to raw)
 #   -p <N>        Max guests in parallel  (default: 5)
 #   -A            All nodes (whole cluster). Default is this node only.
@@ -39,8 +42,8 @@
 set -euo pipefail
 
 # ---- defaults -------------------------------------------------------------
-SRC_STORAGE="Neohosting"
-DST_STORAGE="TN01SSD1600-NeoHosting"
+SRC_STORAGE=""
+DST_STORAGE=""
 FORMAT="qcow2"
 DELETE_SRC="--delete"
 MAX_PARALLEL=5
@@ -56,8 +59,8 @@ ASSUME_YES=0
 usage() {
   cat <<'USAGE'
 Usage: ./migrate-disks.sh [options]
-  -s <storage>  Source storage        (default: Neohosting)
-  -t <storage>  Target storage         (default: TN01SSD1600-NeoHosting)
+  -s <storage>  Source storage
+  -t <storage>  Target storage
   -f <format>   Preferred VM format     (default: qcow2; auto-falls back to raw)
   -p <N>        Max guests in parallel  (default: 5)
   -A            All nodes (whole cluster). Default is this node only.
@@ -119,6 +122,7 @@ TS="$(date +%Y%m%d-%H%M%S)"
 LOGDIR="/var/log/migrate-disks-$TS-$$"
 mkdir -p "$LOGDIR/results" "$LOGDIR/results-deferred"
 DEFERRED_LIST="$LOGDIR/deferred.list"; : > "$DEFERRED_LIST"
+DEFERRED_CT_LIST="$LOGDIR/deferred-ct.list"; : > "$DEFERRED_CT_LIST"
 MAIN_LOG="$LOGDIR/main.log"
 log() { echo "[$(date '+%F %T')] $*" | tee -a "$MAIN_LOG"; }
 
@@ -180,6 +184,7 @@ echo "Guests : $([ "$INCLUDE_VMS" -eq 1 ] && echo -n 'VMs '; [ "$INCLUDE_CTS" -e
 echo "VM disk format: $FORMAT   (containers: storage-native)"
 echo "Parallel guests: $MAX_PARALLEL"
 echo "TPM state on running VMs: $([ "$STOP_FOR_OFFLINE" -eq 1 ] && echo "deferred phase — graceful ${GRACEFUL_TIMEOUT}s then force-stop, move, restart" || echo "skip + report")"
+[ "$INCLUDE_CTS" -eq 1 ] && echo "Running containers: stopped (graceful ${GRACEFUL_TIMEOUT}s then force-stop), volumes moved, restarted — always, since a container's storage can't move while it's up"
 echo "Delete source after move: $([ -n "$DELETE_SRC" ] && echo yes || echo no)"
 echo "Dry run: $([ "$DRY_RUN" -eq 1 ] && echo yes || echo no)"
 echo
@@ -320,6 +325,10 @@ vm_is_running() {  # $1=node $2=id
   run_on "$1" qm status "$2" 2>/dev/null | grep -q 'status: running'
 }
 
+ct_is_running() {  # $1=node $2=id
+  run_on "$1" pct status "$2" 2>/dev/null | grep -q 'status: running'
+}
+
 # ---- per-guest worker -----------------------------------------------------
 process_unit() {
   local unit="$1"
@@ -327,6 +336,25 @@ process_unit() {
   local WORKER_LOG="$LOGDIR/${utype}-${unode}-${uid}.log"
   local ok=0 fail=0 raw=0 skipped=0 used_fmt move_ok key vol d dry_fmt
   trap 'echo "$ok $fail $raw $skipped" > "$LOGDIR/results/${utype}-${unode}-${uid}"' EXIT
+
+  # A container's volumes can only move while it's stopped (unlike VM disks,
+  # which move live). Don't block this slot on a shutdown — hand the whole
+  # guest off to the deferred phase, which stops it, moves every volume, and
+  # restarts it. This applies regardless of -S.
+  if [ "$utype" = ct ] && ct_is_running "$unode" "$uid"; then
+    if [ "$DRY_RUN" -eq 1 ]; then
+      log "ct $uid@$unode: DRY RUN — running, would stop (graceful ${GRACEFUL_TIMEOUT}s then force), move its volume(s), then restart:"
+      while IFS= read -r d; do
+        [ -z "$d" ] && continue
+        key="${d%% *}"
+        log "  ct $uid@$unode: DRY RUN pct move-volume $uid $key $DST_STORAGE ${DELETE_SRC}"
+      done <<< "${UNIT_VOLS[$unit]}"
+    else
+      printf '%s %s\n' "$unode" "$uid" >> "$DEFERRED_CT_LIST"
+      log "ct $uid@$unode: running — container must be stopped to move its storage; deferring to shutdown phase (stop, move all volumes, restart)"
+    fi
+    return
+  fi
 
   while IFS= read -r d; do
     [ -z "$d" ] && continue
@@ -415,6 +443,40 @@ process_deferred_tpm() {  # $1=node $2=id $3=key
   fi
 }
 
+# ---- deferred worker: shut down (force after grace), move all CT volumes,
+# restart. A container's volumes can only move while it's stopped, so every
+# running container ends up here rather than in the main pass.
+process_deferred_ct() {  # $1=node $2=id
+  local node="$1" id="$2"
+  local unit="ct:$node:$id"
+  local WORKER_LOG="$LOGDIR/ct-${node}-${id}.log"
+  local ok=0 fail=0 move_ok key vol d
+  trap 'echo "$ok $fail 0 0" > "$LOGDIR/results-deferred/ct-${node}-${id}"' EXIT
+
+  log "ct $id@$node: [phase 3] shutting down (graceful ${GRACEFUL_TIMEOUT}s, then force) to move its volume(s)"
+  if ! run_on "$node" pct shutdown "$id" --timeout "$GRACEFUL_TIMEOUT" --forceStop 1 >>"$WORKER_LOG" 2>&1; then
+    log "ct $id@$node: [phase 3] FAILED — container would not stop even with force (see $WORKER_LOG)"
+    fail=1; return
+  fi
+  log "ct $id@$node: [phase 3] stopped; moving volume(s)"
+  while IFS= read -r d; do
+    [ -z "$d" ] && continue
+    key="${d%% *}"; vol="${d#* }"
+    move_ok=0
+    log "ct $id@$node: [phase 3] moving $key ($vol) -> $DST_STORAGE"
+    if attempt_move_ct "$node" "$id" "$key"; then move_ok=1; fi
+    if [ "$move_ok" -eq 1 ] && verify_moved ct "$node" "$id" "$key"; then
+      log "ct $id@$node: $key OK — verified on $DST_STORAGE (format: native)"; ok=$((ok+1))
+    elif [ "$move_ok" -eq 1 ]; then
+      log "ct $id@$node: $key move reported success but still references $SRC_STORAGE — CHECK MANUALLY"; fail=$((fail+1))
+    else
+      log "ct $id@$node: $key FAILED (see $WORKER_LOG) — continuing"; fail=$((fail+1))
+    fi
+  done <<< "${UNIT_VOLS[$unit]}"
+  log "ct $id@$node: [phase 3] restarting container"
+  run_on "$node" pct start "$id" >>"$WORKER_LOG" 2>&1 || log "ct $id@$node: [phase 3] WARNING — failed to restart, START MANUALLY"
+}
+
 # ---- dispatch -------------------------------------------------------------
 log "Starting: $total_vols volume(s) across ${#UNIT_ORDER[@]} guest(s), up to $MAX_PARALLEL parallel."
 for u in "${UNIT_ORDER[@]}"; do
@@ -439,6 +501,22 @@ if [ -s "$DEFERRED_LIST" ]; then
     done
     process_deferred_tpm "$dn" "$di" "$dk" &
   done < "$DEFERRED_LIST"
+  wait
+fi
+
+# ---- phase 3: deferred containers (stop, move all volumes, restart) -------
+# A container's volumes can only move while it's stopped, so every running
+# container was deferred here rather than moved live in the main pass.
+if [ -s "$DEFERRED_CT_LIST" ]; then
+  ndefct="$(wc -l < "$DEFERRED_CT_LIST")"
+  log "Phase 3: $ndefct container(s) to stop, move, and restart (up to $MAX_PARALLEL at once)."
+  while read -r dn di; do
+    [ -n "$dn" ] || continue
+    while [ "$(jobs -rp | wc -l)" -ge "$MAX_PARALLEL" ]; do
+      wait -n 2>/dev/null || sleep 1
+    done
+    process_deferred_ct "$dn" "$di" &
+  done < "$DEFERRED_CT_LIST"
   wait
 fi
 

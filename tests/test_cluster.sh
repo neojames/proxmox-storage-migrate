@@ -15,7 +15,7 @@ mock_set_node_ip JSB-SRV-PROX02 10.9.9.2
 
 mock_add_vm pve1 100 stopped 'scsi0: Neohosting:vm-100-disk-0,size=10G'
 mock_add_vm JSB-SRV-PROX02 101 stopped 'scsi0: Neohosting:vm-101-disk-0,size=10G'
-mock_add_ct JSB-SRV-PROX02 201 'rootfs: Neohosting:subvol-201-disk-0,size=8G'
+mock_add_ct JSB-SRV-PROX02 201 stopped 'rootfs: Neohosting:subvol-201-disk-0,size=8G'
 
 echo "[case] without -A -> only the local node's guest"
 out="$(mock_run -y)"

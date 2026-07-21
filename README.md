@@ -32,7 +32,10 @@ every disk of every guest by hand.
   restarts it. Regular disks migrate live first, so downtime is just the tiny
   TPM-state move.
 - **Migrates containers** as-is (no format flag; the target storage decides the
-  on-disk format). Bind mounts and device mounts are ignored automatically.
+  on-disk format). Bind mounts and device mounts are ignored automatically. A
+  container's volumes can only move while it's stopped, so a running container
+  is always (no flag needed) stopped, fully migrated, and restarted in a
+  deferred phase — mirroring how TPM state is handled for VMs.
 - **Runs cluster-wide** (`-A`): each move executes on the node that owns the
   guest — locally, or over SSH to remote nodes the way Proxmox itself does
   (node IP + `HostKeyAlias`, accepting new host keys).
@@ -97,6 +100,20 @@ bin/migrate-disks.sh -s a -t b -k
   down gracefully (`GRACEFUL_TIMEOUT`, default 300s) then force-stopped if
   needed, the volume is moved as `raw`, and the VM is restarted. Shutdowns in
   this phase run concurrently.
+
+## How container shutdown is handled
+
+A container's storage can only move while it's stopped — there's no live path
+like there is for VM disks. So this isn't gated behind a flag:
+
+- **Stopped containers** migrate inline in the main pass, like any other
+  volume.
+- **Running containers** are deferred as a whole guest (all of its volumes
+  together, not moved live one-by-one) to a phase that runs after the main
+  pass: the container is shut down gracefully (`GRACEFUL_TIMEOUT`, default
+  300s) then force-stopped if needed, every volume is moved in turn, and the
+  container is restarted. Deferred containers in this phase run concurrently,
+  the same way deferred TPM state does.
 
 ## Safety notes
 
