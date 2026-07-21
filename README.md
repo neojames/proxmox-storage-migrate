@@ -1,6 +1,6 @@
 # proxmox-storage-migrate
 
-![CI](https://github.com/neojames/proxmox-storage-migrate/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/neojames/proxmox-storage-migrate/actions/workflows/ci.yml/badge.svg)](https://github.com/neojames/proxmox-storage-migrate/actions/workflows/ci.yml)
 
 Bulk-migrate Proxmox VE guest storage from one storage to another — across an
 entire cluster, in parallel — with sensible handling of the awkward cases
