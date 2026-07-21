@@ -1,0 +1,11 @@
+# runtime logs (the tool writes here on a real host)
+/var/log/migrate-disks-*/
+*.log
+
+# editor / OS cruft
+*.swp
+*~
+.DS_Store
+
+# test scratch
+/tmp/
