@@ -86,10 +86,15 @@ as root:
 curl -fsSL https://raw.githubusercontent.com/neojames/proxmox-storage-migrate/main/install.sh | bash
 ```
 
-This adds the apt repo (verifying the signing key's fingerprint before
-trusting it), runs `apt update`, and installs the package — safe to re-run any
-time to pick up a new release. Prefer to do it by hand, or can't pipe a script
-into `bash`? Same three steps, spelled out:
+If already installed, it asks whether to upgrade (default) or remove instead
+— removing keeps `/etc/default/proxmox-storage-migrate` in place (`apt purge`
+removes that too). Otherwise it adds the apt repo (verifying the signing
+key's fingerprint before trusting it), runs `apt update`, and installs the
+package — safe to re-run any time to pick up a new release. If this node is
+part of a multi-node Proxmox cluster, it then asks (default **No**) whether
+to install on the other nodes too, over SSH — nothing is asked on a
+standalone node. Prefer to do it by hand, or can't pipe a script into
+`bash`? Same three steps, spelled out:
 
 ```bash
 curl -fsSL https://neojames.github.io/proxmox-storage-migrate/KEY.gpg \

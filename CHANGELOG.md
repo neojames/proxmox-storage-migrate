@@ -2,6 +2,22 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+### Added
+- `install.sh`: if the package is already installed, it now asks whether to
+  upgrade (default) or remove it — removing uses `apt-get remove` (not
+  `purge`), so `/etc/default/proxmox-storage-migrate` is left in place and
+  only the binary/man page/docs are cleaned up; `apt purge` still removes
+  the config file too, same as always.
+- `install.sh`: on a Proxmox host that's part of a multi-node cluster, after
+  installing locally it now asks (default **No**) whether to also install on
+  the rest of the cluster over SSH, reusing the same node-IP/`HostKeyAlias`
+  resolution the main script uses for cluster mode. A standalone node (or a
+  non-Proxmox host) isn't asked anything — the prompt doesn't appear at all
+  unless there's another node to offer. No package version bump needed:
+  `install.sh` is fetched live from `main`, not shipped in the `.deb`.
+
 ## [1.2.1]
 
 ### Fixed

@@ -175,6 +175,26 @@ to exercise what happens with genuinely nothing on the command line.
   It's fetched from `raw.githubusercontent.com` (main branch), not published
   via the release pipeline, so edits take effect immediately on push — no tag
   needed. Keep it in the CI/release shellcheck file lists.
+  - Before any of that, if the package is already installed
+    (`dpkg-query -W -f='${Status}'`), it asks — same `/dev/tty` /
+    default-on-non-tty pattern as the cluster prompt below, defaulting to
+    **upgrade** here — whether to upgrade (falls through to the normal
+    fetch/apt-get-install flow below) or remove (`apt-get remove`, then
+    exits). `remove`, not `purge`, is deliberate: `/etc/default/
+    proxmox-storage-migrate` is a conffile (debhelper auto-detects anything
+    under `/etc/` as one), so a plain remove leaves it in place and only
+    the binary/man page/docs are cleaned up — verified by building the
+    `.deb` and running `dpkg -i`/`dpkg -r` against a fake root.
+  - After the local install, if `/etc/pve/nodes` shows other nodes besides
+    this one (same detection as the main script: `/etc/pve/local` symlink +
+    `/etc/pve/nodes/*`), it asks — reading from `/dev/tty` since stdin is the
+    piped script itself, defaulting to **No** on empty/non-tty input — whether
+    to install on those nodes too. If so, each one gets
+    `curl -fsSL $INSTALL_URL | bash -s -- --no-cluster-prompt` over SSH
+    (same node-IP-via-`/etc/pve/.members` + `HostKeyAlias` resolution as
+    `ssh_node` in the main script); `--no-cluster-prompt` stops that remote
+    leg from asking again and fanning out further. A single-node host (or a
+    non-Proxmox host) sees none of this — the check is skipped outright.
 
 ## Safety
 
