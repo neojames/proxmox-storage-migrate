@@ -4,8 +4,9 @@ All notable changes to this project are documented here.
 
 ## [1.2.0-beta.1]
 
-Beta: tagged for testing, not published as a release (no `.deb`/apt-repo
-publish — see the tag notes).
+Beta: tagged for testing. A `*-beta*` tag builds the `.deb` and attaches it
+to the workflow run as a downloadable artifact, but — unlike a `v*` tag —
+never creates a GitHub Release or publishes to the apt repo.
 
 ### Changed
 - `-s`/`-t` no longer have defaults — they're required, from *some* source

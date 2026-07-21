@@ -1,0 +1,62 @@
+name: Beta build
+
+# Beta tags (e.g. 1.2.0-beta.1 — deliberately NOT v-prefixed, so release.yml's
+# `v*` trigger never fires for them) get a .deb built and attached to the
+# workflow run as a downloadable artifact. Unlike release.yml, this never
+# creates a GitHub Release or touches the apt repo on gh-pages — a beta tag
+# is for testing, not distribution.
+
+on:
+  push:
+    tags:
+      - '*-beta*'
+
+permissions:
+  contents: read
+
+jobs:
+  build-deb:
+    name: Build .deb (beta, not published)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install build and test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential debhelper devscripts dpkg-dev shellcheck
+
+      - name: Lint
+        run: |
+          shellcheck -x --severity=warning \
+            bin/migrate-disks.sh \
+            install.sh \
+            tests/run-tests.sh \
+            tests/lib/mocks.sh \
+            tests/test_*.sh
+
+      - name: Run tests
+        run: bash tests/run-tests.sh
+
+      - name: Verify tag matches debian/changelog version
+        run: |
+          pkg_version="$(dpkg-parsechangelog --show-field Version)"
+          if [ "$pkg_version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME doesn't match debian/changelog version $pkg_version"
+            exit 1
+          fi
+
+      - name: Build .deb
+        run: dpkg-buildpackage -us -uc -b
+
+      - name: Collect artifact
+        run: |
+          mkdir -p dist
+          mv ../proxmox-storage-migrate_*.deb dist/
+
+      - name: Upload .deb as a workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: proxmox-storage-migrate_${{ github.ref_name }}
+          path: dist/*.deb
+          retention-days: 30

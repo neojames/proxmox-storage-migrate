@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+      - '!*-beta*'   # belt-and-suspenders: beta tags never get published as a release
 
 permissions:
   contents: write

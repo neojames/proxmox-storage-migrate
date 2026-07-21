@@ -144,6 +144,14 @@ to exercise what happens with genuinely nothing on the command line.
   - The publish step needs a second checkout (`ref: gh-pages, path: gh-pages`)
     alongside the main one, and pushes back to `gh-pages` using the default
     `GITHUB_TOKEN` (needs `permissions: contents: write` on the workflow).
+- **Beta tags**: `X.Y.Z-beta.N` (e.g. `1.2.0-beta.1`) — deliberately *not*
+  `v`-prefixed, so `release.yml`'s `v*` trigger never fires for them (defense
+  in depth: its trigger also explicitly excludes `!*-beta*`). These run
+  `.github/workflows/beta.yml` instead: same lint/test/changelog-version
+  checks and `dpkg-buildpackage`, but the `.deb` is only uploaded as a
+  workflow artifact (`actions/upload-artifact`, 30-day retention) — no
+  GitHub Release, no apt-repo publish. **Never push a tag combining both**
+  (e.g. `v1.2.0-beta.1`) — it would match both triggers.
 - `install.sh` (repo root) is the curl-pipe-to-bash installer: adds the apt
   repo (verifying the downloaded key's fingerprint against a hardcoded
   `EXPECTED_FINGERPRINT` before trusting it — bump that constant if the
