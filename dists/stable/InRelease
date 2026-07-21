@@ -1,0 +1,35 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Origin: proxmox-storage-migrate
+Label: proxmox-storage-migrate
+Suite: stable
+Codename: stable
+Architectures: all
+Components: main
+Date: Tue, 21 Jul 2026 17:20:17 UTC
+MD5Sum:
+ 8e7bb7752bfe599cc4f6c8cf70face05             1014 main/binary-all/Packages
+ bb7ffc7a71b442cdb98df51bb96b755e              617 main/binary-all/Packages.gz
+SHA1:
+ 4ba955dd7d99494fa44ea191b242ebc84db7ca2a             1014 main/binary-all/Packages
+ 9191fb5ab613d21e31f1169556782197804211dc              617 main/binary-all/Packages.gz
+SHA256:
+ 59d925668619e63bbd6537b7daea7d8322aecbc468ef863d10ff3dced142ab02             1014 main/binary-all/Packages
+ 42b285928ffe9c4184bf439e3d2d0ca1c31f4053fedbed174cfe8e96147e65c5              617 main/binary-all/Packages.gz
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEz8bNOhoJj5hE5LMP1dVCFjz7RWwFAmpfqlEACgkQ1dVCFjz7
+RWz+KQ//VkMGsvi4yuWkKapoygXsT698bjEv9uBTLlAXFx+EVSpG2EcyK98UoCOH
+gnTU9F4gKO+dp25sy2HMiwy7tb8+vk03QDKrFNGQ5o9eTy1tkOidGQtbqVgpqdbW
+G2BRoK79zOuvLhtHSyTvpUKL4xXyTdJi/eeW98Ue0/fl8FUsCFdT/FwaXKBWBnRA
+LDYz2PG0EMfMK5E7AaT3YJC6vG9TmP1rAwIlF9mmp2PshvjioJcKbwlyr38gr86H
+OFpXsqtqV934kCBWwC5LSeE3gdoX3dSNEYNgOSOtgCXnNiBMeBQe4X2UlBeav7Pl
+LzGL2l0gau8H8u2x6HpZEdWwfmX66PnQrsQo2FaDzhLONfCFme5MvR7K+j5aSqpT
+z9cdCwS2BwPLVC/ak4o7K0ZM/VNRHYH8KmgJy+2ttjzfH19zEUXvGY+wJFXn7Hyb
+Ot1H6J8M+qLZ/3Z8Rx0uyj/4WvDi23T8hhtumOvGXPGPreLBve/btoccHQk3H+/f
+8Thob8/uL4GhbjCAZan6zQGl8qWgR7uSbtyxyOxPzj8T4Jtv8S/7W+2PKuXJO9Hc
+Az7iGJe3ox2Q+Kmcg/O0saQOvA5zZ3famFys7OEqh32IfTp3C6oNGBnOxl6660+p
+WC7hRRjgSOBjx18VVGI78kEC014CWWy7ieRLlsEZQIQtAv79bLw=
+=oft8
+-----END PGP SIGNATURE-----
