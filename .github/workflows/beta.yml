@@ -55,7 +55,7 @@ jobs:
           mv ../proxmox-storage-migrate_*.deb dist/
 
       - name: Upload .deb as a workflow artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: proxmox-storage-migrate_${{ github.ref_name }}
           path: dist/*.deb
