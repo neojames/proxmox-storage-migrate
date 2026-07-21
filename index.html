@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>proxmox-storage-migrate apt repo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 40rem; margin: 3rem auto; padding: 0 1rem; color: #1a1a1a; }
+  code, pre { font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  pre { background: #f4f4f4; padding: 0.8rem 1rem; border-radius: 6px; overflow-x: auto; }
+  a { color: #0969da; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #0d1117; color: #e6edf3; }
+    pre { background: #161b22; }
+    a { color: #58a6ff; }
+  }
+</style>
+</head>
+<body>
+<h1>proxmox-storage-migrate</h1>
+<p>
+  APT repository for
+  <a href="https://github.com/neojames/proxmox-storage-migrate">proxmox-storage-migrate</a>,
+  a bulk Proxmox VE guest storage migration tool. Packages are published here
+  automatically whenever a new version is released.
+</p>
+
+<h2>Add the repository</h2>
+<p>Run this on the Proxmox host, as root:</p>
+<pre>curl -fsSL https://neojames.github.io/proxmox-storage-migrate/KEY.gpg \
+  -o /usr/share/keyrings/proxmox-storage-migrate.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/proxmox-storage-migrate.gpg] https://neojames.github.io/proxmox-storage-migrate/ stable main" \
+  > /etc/apt/sources.list.d/proxmox-storage-migrate.list
+
+apt update
+apt install proxmox-storage-migrate</pre>
+
+<p>
+  From then on, <code>apt update &amp;&amp; apt upgrade</code> picks up new
+  releases automatically.
+</p>
+
+<h2>Signing key</h2>
+<p>
+  Packages are signed with a dedicated repo key (not tied to any personal
+  identity): <code>D5D542163CFB456C</code>.
+  <a href="KEY.asc">Armored public key</a> ·
+  <a href="KEY.gpg">Keyring-format public key</a>
+</p>
+</body>
+</html>
