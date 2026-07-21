@@ -1,6 +1,9 @@
 # proxmox-storage-migrate
 
 [![CI](https://github.com/neojames/proxmox-storage-migrate/actions/workflows/ci.yml/badge.svg)](https://github.com/neojames/proxmox-storage-migrate/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/neojames/proxmox-storage-migrate?include_prereleases&label=release)](https://github.com/neojames/proxmox-storage-migrate/releases)
+[![Last commit](https://img.shields.io/github/last-commit/neojames/proxmox-storage-migrate)](https://github.com/neojames/proxmox-storage-migrate/commits/main)
+[![Open issues](https://img.shields.io/github/issues/neojames/proxmox-storage-migrate)](https://github.com/neojames/proxmox-storage-migrate/issues)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Bulk-migrate Proxmox VE guest storage from one storage to another — across an
