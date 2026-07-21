@@ -136,7 +136,9 @@ export -f qm pct ssh _mock_find_conf
 # stdout+stderr. Path-redirects /etc/pve to the fake tree.
 mock_run() {
   local redir="$MOCK_ROOT/mig.sh"
-  sed 's#/etc/pve#'"$MOCK_PVE"'#g' "$SCRIPT_UNDER_TEST" > "$redir"
+  sed -e 's#/etc/pve#'"$MOCK_PVE"'#g' \
+      -e 's#/var/log/migrate-disks-#'"$MOCK_ROOT"'/var/log/migrate-disks-#g' \
+      "$SCRIPT_UNDER_TEST" > "$redir"
   bash "$redir" "$@" 2>&1
 }
 
