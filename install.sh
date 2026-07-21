@@ -11,6 +11,13 @@
 
 set -euo pipefail
 
+# Quiets debconf's frontend-fallback noise ("unable to initialize frontend:
+# Dialog/Readline/Teletype ... falling back to ... Noninteractive") that apt
+# prints on any run without a controlling tty — harmless, but this installer
+# is almost always run that way (curl | bash) so it'd otherwise show every
+# time. Only affects apt-get calls made by this script.
+export DEBIAN_FRONTEND=noninteractive
+
 REPO_URL="https://neojames.github.io/proxmox-storage-migrate"
 INSTALL_URL="https://raw.githubusercontent.com/neojames/proxmox-storage-migrate/main/install.sh"
 KEYRING="/usr/share/keyrings/proxmox-storage-migrate.gpg"
