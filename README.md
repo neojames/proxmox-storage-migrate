@@ -1,6 +1,7 @@
 # proxmox-storage-migrate
 
 [![CI](https://github.com/neojames/proxmox-storage-migrate/actions/workflows/ci.yml/badge.svg)](https://github.com/neojames/proxmox-storage-migrate/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Bulk-migrate Proxmox VE guest storage from one storage to another — across an
 entire cluster, in parallel — with sensible handling of the awkward cases
@@ -12,6 +13,25 @@ every disk of every guest by hand.
 
 > **Heads up:** this moves real data and can delete the source copy. Always run
 > a dry run (`-n`) first and read the plan before committing.
+
+## Contents
+
+- [What it does](#what-it-does)
+- [Requirements](#requirements)
+- [Installation](#installation)
+  - [From the apt repo (recommended)](#from-the-apt-repo-recommended)
+  - [From a standalone .deb](#from-a-standalone-deb)
+  - [From a checkout](#from-a-checkout)
+  - [Beta builds](#beta-builds)
+- [Usage](#usage)
+  - [Examples](#examples)
+- [Config file](#config-file)
+- [How TPM state is handled](#how-tpm-state-is-handled)
+- [How container shutdown is handled](#how-container-shutdown-is-handled)
+- [Safety notes](#safety-notes)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## What it does
 
@@ -30,12 +50,13 @@ every disk of every guest by hand.
   reported by default, or (with `-S`) deferred to a phase that shuts the VM
   down gracefully — force-stopping after a grace window — moves the volume, and
   restarts it. Regular disks migrate live first, so downtime is just the tiny
-  TPM-state move.
+  TPM-state move. Details: [How TPM state is handled](#how-tpm-state-is-handled).
 - **Migrates containers** as-is (no format flag; the target storage decides the
   on-disk format). Bind mounts and device mounts are ignored automatically. A
   container's volumes can only move while it's stopped, so a running container
   is always (no flag needed) stopped, fully migrated, and restarted in a
-  deferred phase — mirroring how TPM state is handled for VMs.
+  deferred phase — mirroring how TPM state is handled for VMs. Details:
+  [How container shutdown is handled](#how-container-shutdown-is-handled).
 - **Runs cluster-wide** (`-A`): each move executes on the node that owns the
   guest — locally, or over SSH to remote nodes the way Proxmox itself does
   (node IP + `HostKeyAlias`, accepting new host keys).
@@ -104,6 +125,14 @@ checkout (needs `debhelper` and `devscripts`).
 Just run `bin/migrate-disks.sh` directly — no build step, no dependencies
 beyond `bash`, `python3`, and (for cluster mode) `openssh-client`.
 
+### Beta builds
+
+Tags like `1.2.0-beta.1` (no `v` prefix) build a `.deb` and attach it to that
+[Actions run](https://github.com/neojames/proxmox-storage-migrate/actions/workflows/beta.yml)
+as a downloadable artifact — for testing an in-progress version before it
+ships. Unlike a real `vX.Y.Z` tag, a beta tag never creates a GitHub Release
+or touches the apt repo.
+
 ## Usage
 
 ```
@@ -128,8 +157,9 @@ bin/migrate-disks.sh [options]
 bin/migrate-disks.sh -s <source storage> -t <target storage>
 ```
 
-Omit either one (or leave it empty) and the script exits immediately with an
-error and the usage text, rather than guessing or falling through to a
+Omit either one (or leave it empty), and neither is set in the
+[config file](#config-file) either, and the script exits immediately with an
+error and the usage text — rather than guessing or falling through to a
 confusing "storage not defined" error further down.
 
 ### Examples
@@ -227,6 +257,8 @@ like there is for VM disks. So this isn't gated behind a flag:
   reached.
 - Container moves need the target storage enabled for `rootdir` content, and
   cross-node moves need the target available on the owning node.
+- Found a security issue? See [SECURITY.md](SECURITY.md) for how to report it
+  privately.
 
 ## Testing
 
@@ -240,6 +272,13 @@ tests/run-tests.sh test_cluster   # run one
 ```
 
 Requires `bash` and `python3`. See `tests/lib/mocks.sh` for the harness.
+
+## Contributing
+
+[CLAUDE.md](CLAUDE.md) documents the architecture, invariants, and packaging
+pipeline in more depth than this README — start there before changing the
+script, tests, or `.github/workflows/`. [CHANGELOG.md](CHANGELOG.md) tracks
+what shipped in each version.
 
 ## License
 
