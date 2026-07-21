@@ -50,6 +50,31 @@ every disk of every guest by hand.
 - For cluster mode: working passwordless root SSH between nodes (standard in a
   healthy PVE cluster).
 
+## Installation
+
+### From a `.deb` (recommended)
+
+Every tagged release publishes a `.deb` on the
+[Releases page](https://github.com/neojames/proxmox-storage-migrate/releases).
+On the Proxmox host, as root:
+
+```bash
+wget https://github.com/neojames/proxmox-storage-migrate/releases/download/vX.Y.Z/proxmox-storage-migrate_X.Y.Z_all.deb
+apt install ./proxmox-storage-migrate_X.Y.Z_all.deb
+```
+
+This installs the tool as `migrate-disks` on your `PATH`, plus a man page
+(`man migrate-disks`). From here on, replace `bin/migrate-disks.sh` in the
+examples below with `migrate-disks`.
+
+To build the `.deb` yourself instead: `dpkg-buildpackage -us -uc -b` from a
+checkout (needs `debhelper` and `devscripts`).
+
+### From a checkout
+
+Just run `bin/migrate-disks.sh` directly — no build step, no dependencies
+beyond `bash`, `python3`, and (for cluster mode) `openssh-client`.
+
 ## Usage
 
 ```

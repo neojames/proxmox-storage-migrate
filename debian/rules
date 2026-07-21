@@ -1,0 +1,7 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	install -Dm755 bin/migrate-disks.sh debian/proxmox-storage-migrate/usr/bin/migrate-disks

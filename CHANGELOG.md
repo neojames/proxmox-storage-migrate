@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [1.1.0]
 
 ### Changed
 - Container volumes now always move offline: a running container's storage
@@ -11,6 +11,11 @@ All notable changes to this project are documented here.
   concurrent phase after the main pass, the same way TPM state is handled for
   VMs. This happens unconditionally (no flag), since it's required rather
   than optional.
+
+### Added
+- Debian packaging (`debian/`): installs as `/usr/bin/migrate-disks`, with a
+  man page and `Depends` on `python3`/`openssh-client`. Pushing a `v*` tag
+  builds the `.deb` and attaches it to a GitHub Release.
 
 ## [1.0.0]
 Initial release. A single Bash tool to bulk-migrate Proxmox VE guest storage.

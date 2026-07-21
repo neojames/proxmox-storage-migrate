@@ -1,0 +1,14 @@
+proxmox-storage-migrate (1.1.0) unstable; urgency=medium
+
+  * Running containers are now always stopped, migrated, and restarted
+    (a container's volumes can't move live) instead of being left alone.
+  * Initial Debian packaging: installs as /usr/bin/migrate-disks, with a
+    man page.
+
+ -- James Bolton <james@neojames.me>  Tue, 21 Jul 2026 17:00:00 +0100
+
+proxmox-storage-migrate (1.0.0) unstable; urgency=medium
+
+  * Initial release.
+
+ -- James Bolton <james@neojames.me>  Tue, 21 Jul 2026 15:00:00 +0100

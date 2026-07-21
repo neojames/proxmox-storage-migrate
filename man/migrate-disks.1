@@ -1,0 +1,73 @@
+.TH MIGRATE-DISKS 1 "2026-07-21" "proxmox-storage-migrate" "User Commands"
+.SH NAME
+migrate-disks \- bulk-migrate Proxmox VE guest storage between storages
+.SH SYNOPSIS
+.B migrate-disks
+[\fIOPTIONS\fR]
+.SH DESCRIPTION
+.B migrate-disks
+bulk-migrates Proxmox VE guest storage (VM disks and container volumes)
+from one storage to another, optionally across an entire cluster, in
+parallel. It wraps
+.B qm move-disk
+and
+.B pct move-volume
+with discovery, parallelism, QCOW2/raw format handling, TPM state and
+container shutdown handling, per-move verification, and logging.
+.PP
+Must be run as root on a Proxmox VE host.
+.SH OPTIONS
+.TP
+.BI \-s \ storage
+Source storage.
+.TP
+.BI \-t \ storage
+Target storage.
+.TP
+.BI \-f \ format
+Preferred VM disk format (default: qcow2; automatically falls back to raw
+on storage that can't hold it).
+.TP
+.BI \-p \ N
+Max guests migrated in parallel (default: 5).
+.TP
+.B \-A
+All nodes (whole cluster). Default is this node only.
+.TP
+.B \-V
+VMs only (skip containers).
+.TP
+.B \-C
+Containers only (skip VMs).
+.TP
+.B \-S
+Stop/move/start VMs to migrate offline-only volumes (TPM state).
+.TP
+.B \-k
+Keep source volumes (omit \-\-delete).
+.TP
+.B \-n
+Dry run.
+.TP
+.B \-y
+Skip the confirmation prompt.
+.TP
+.B \-h
+Show help.
+.SH BEHAVIOR NOTES
+TPM state volumes are always raw and can only move while the VM is
+stopped: without \fB\-S\fR they're skipped on a running VM and reported;
+with \fB\-S\fR they're deferred to a phase that shuts the VM down
+gracefully (then forcibly), moves the volume, and restarts it.
+.PP
+A container's volumes can only move while it's stopped. A running
+container is always (regardless of any flag) stopped, has every volume
+migrated, and is restarted in the same deferred fashion as TPM state.
+.SH SAFETY
+This tool deletes the source volume after a successful move unless
+\fB\-k\fR is given, and can stop and restart guests. Always run with
+\fB\-n\fR first to review the plan before committing.
+.SH SEE ALSO
+Full documentation and source:
+.br
+https://github.com/neojames/proxmox-storage-migrate

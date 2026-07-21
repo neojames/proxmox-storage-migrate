@@ -25,7 +25,7 @@
 #
 # Run this ON a Proxmox host as root.
 #
-# Usage: ./migrate-disks.sh [options]
+# Usage: migrate-disks [options]
 #   -s <storage>  Source storage
 #   -t <storage>  Target storage
 #   -f <format>   Preferred VM format     (default: qcow2; auto-falls back to raw)
@@ -58,7 +58,7 @@ ASSUME_YES=0
 # ---- help -----------------------------------------------------------------
 usage() {
   cat <<'USAGE'
-Usage: ./migrate-disks.sh [options]
+Usage: migrate-disks [options]
   -s <storage>  Source storage
   -t <storage>  Target storage
   -f <format>   Preferred VM format     (default: qcow2; auto-falls back to raw)
