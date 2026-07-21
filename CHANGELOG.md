@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented here.
 
+## [1.2.1]
+
+### Fixed
+- The published apt repo listed the package under
+  `dists/stable/main/binary-all/` instead of `binary-amd64/`. A default apt
+  source line (what `install.sh` and the README set up) only ever fetches
+  `binary-<native-arch>`, so on a normal amd64 host `apt update` silently
+  skipped the repo entirely ("doesn't support architecture 'amd64'") and
+  `apt install`/`upgrade` could never see any published version, including
+  `1.2.0`. No script changes — packaging pipeline only.
+
 ## [1.2.0]
 
 ### Changed

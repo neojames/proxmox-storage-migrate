@@ -131,9 +131,14 @@ to exercise what happens with genuinely nothing on the command line.
   self-hosted apt repo on the `gh-pages` branch (served via GitHub Pages at
   `neojames.github.io/proxmox-storage-migrate/`):
   - `pool/main/p/proxmox-storage-migrate/` accumulates every released `.deb`;
-    `dists/stable/main/binary-all/Packages(.gz)` is regenerated from the whole
-    pool each time via `dpkg-scanpackages --multiversion` (so old versions
-    stay installable by exact version, `apt upgrade` still finds the newest).
+    `dists/stable/main/binary-amd64/Packages(.gz)` is regenerated from the
+    whole pool each time via `dpkg-scanpackages --multiversion` (so old
+    versions stay installable by exact version, `apt upgrade` still finds the
+    newest). The package is `Architecture: all`, but it's published under
+    `binary-amd64` (not `binary-all`) because that's what a plain
+    `deb [...] ... stable main` line — what `install.sh`/the README set up —
+    actually fetches; `binary-all` is only consulted if a client explicitly
+    adds `all` as a foreign architecture, which nothing here asks for.
   - `dists/stable/Release` is hand-built (no `apt-ftparchive`, to avoid an
     extra dependency) and signed twice — clearsigned as `InRelease`, and
     detached as `Release.gpg` — for compatibility with both old and new apt.

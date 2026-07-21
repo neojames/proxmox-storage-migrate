@@ -1,3 +1,15 @@
+proxmox-storage-migrate (1.2.1) unstable; urgency=medium
+
+  * Fix the apt repo: publish the package index under
+    dists/stable/main/binary-amd64/ (was binary-all). A plain
+    `deb [...] ... stable main` line — what install.sh/the README set up —
+    only ever fetches binary-<native-arch>, so publishing solely under
+    binary-all left `apt update`/`apt install`/`apt upgrade` unable to see
+    any published version on a normal amd64 host (silently skipped with
+    "doesn't support architecture 'amd64'"). No script changes.
+
+ -- James Bolton <james@neojames.me>  Tue, 21 Jul 2026 20:00:00 +0100
+
 proxmox-storage-migrate (1.2.0) unstable; urgency=medium
 
   * -s/-t are now required (from a flag or the config file below); they no

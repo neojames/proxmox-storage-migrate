@@ -76,17 +76,25 @@ jobs:
       - name: Regenerate apt repo indices
         run: |
           cd gh-pages
-          mkdir -p dists/stable/main/binary-all
+          # Architecture-independent (Architecture: all) packages must live
+          # under the native arch's binary-<arch> index, not a separate
+          # binary-all — apt only fetches binary-all if "all" is explicitly
+          # added as a foreign architecture on the client, which our
+          # install.sh / README instructions don't ask users to do. A plain
+          # `deb [...] ... stable main` line only ever looks at binary-amd64,
+          # so publishing solely under binary-all left every default host
+          # unable to see (or upgrade to) any published version.
+          mkdir -p dists/stable/main/binary-amd64
           dpkg-scanpackages --multiversion pool /dev/null \
-            > dists/stable/main/binary-all/Packages
-          gzip -9 -k -f dists/stable/main/binary-all/Packages
+            > dists/stable/main/binary-amd64/Packages
+          gzip -9 -k -f dists/stable/main/binary-amd64/Packages
 
           {
             echo "Origin: proxmox-storage-migrate"
             echo "Label: proxmox-storage-migrate"
             echo "Suite: stable"
             echo "Codename: stable"
-            echo "Architectures: all"
+            echo "Architectures: amd64"
             echo "Components: main"
             echo "Date: $(date -u '+%a, %d %b %Y %H:%M:%S UTC')"
           } > dists/stable/Release
@@ -94,7 +102,7 @@ jobs:
           gen_hashes() {
             local field="$1" cmd="$2"
             echo "$field:" >> dists/stable/Release
-            for f in main/binary-all/Packages main/binary-all/Packages.gz; do
+            for f in main/binary-amd64/Packages main/binary-amd64/Packages.gz; do
               size=$(stat -c%s "dists/stable/$f")
               hash=$($cmd "dists/stable/$f" | awk '{print $1}')
               printf ' %s %16d %s\n' "$hash" "$size" "$f" >> dists/stable/Release
