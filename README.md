@@ -111,9 +111,7 @@ From then on, `apt update && apt upgrade` picks up new releases. Packages are
 signed with a repo-dedicated GPG key (not tied to any personal identity).
 
 This installs the tool as `proxmox-storage-migrate` on your `PATH`, plus a man
-page (`man proxmox-storage-migrate`). From here on, replace
-`bin/proxmox-storage-migrate` in the examples below with
-`proxmox-storage-migrate`.
+page (`man proxmox-storage-migrate`) — the command used in the examples below.
 
 ### From a standalone `.deb`
 
@@ -131,8 +129,10 @@ checkout (needs `debhelper` and `devscripts`).
 
 ### From a checkout
 
-Just run `bin/proxmox-storage-migrate` directly — no build step, no dependencies
-beyond `bash`, `python3`, and (for cluster mode) `openssh-client`.
+Just run `bin/proxmox-storage-migrate` directly — no build step, no
+dependencies beyond `bash`, `python3`, and (for cluster mode)
+`openssh-client`. Use `bin/proxmox-storage-migrate` in place of the installed
+`proxmox-storage-migrate` shown in the examples below.
 
 ### Beta builds
 
@@ -150,7 +150,7 @@ apt install ./proxmox-storage-migrate_1.2.0-beta.1_all.deb
 ## Usage
 
 ```
-bin/proxmox-storage-migrate [options]
+proxmox-storage-migrate [options]
   -s <storage>  Source storage        (required)
   -t <storage>  Target storage        (required)
   -f <format>   Preferred VM format    (default: qcow2; auto-falls back to raw)
@@ -168,7 +168,7 @@ bin/proxmox-storage-migrate [options]
 `-s`/`-t` have no defaults — the minimum viable command is:
 
 ```bash
-bin/proxmox-storage-migrate -s <source storage> -t <target storage>
+proxmox-storage-migrate -s <source storage> -t <target storage>
 ```
 
 Omit either one (or leave it empty), and neither is set in the
@@ -180,16 +180,16 @@ confusing "storage not defined" error further down.
 
 ```bash
 # See exactly what would happen on this node — changes nothing
-bin/proxmox-storage-migrate -s local-lvm -t ssd-pool -n
+proxmox-storage-migrate -s local-lvm -t ssd-pool -n
 
 # Migrate this node's guests, 5 in parallel
-bin/proxmox-storage-migrate -s local-lvm -t ssd-pool
+proxmox-storage-migrate -s local-lvm -t ssd-pool
 
 # Whole cluster, VMs only, 8 in parallel, auto-handle TPM state
-bin/proxmox-storage-migrate -A -V -S -p 8 -s ceph -t ssd-pool
+proxmox-storage-migrate -A -V -S -p 8 -s ceph -t ssd-pool
 
 # Keep the source copies (don't delete after move)
-bin/proxmox-storage-migrate -s a -t b -k
+proxmox-storage-migrate -s a -t b -k
 ```
 
 ## Config file
