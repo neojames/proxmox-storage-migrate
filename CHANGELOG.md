@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [1.2.2]
 
 ### Added
 - `install.sh`: if the package is already installed, it now asks whether to
@@ -15,8 +15,15 @@ All notable changes to this project are documented here.
   the rest of the cluster over SSH, reusing the same node-IP/`HostKeyAlias`
   resolution the main script uses for cluster mode. A standalone node (or a
   non-Proxmox host) isn't asked anything — the prompt doesn't appear at all
-  unless there's another node to offer. No package version bump needed:
-  `install.sh` is fetched live from `main`, not shipped in the `.deb`.
+  unless there's another node to offer. `install.sh` isn't shipped in the
+  `.deb` (fetched live from `main`), so none of the above needed a package
+  version bump on its own.
+
+### Changed
+- README: Usage/Examples now show the installed command name
+  (`proxmox-storage-migrate`) instead of `bin/proxmox-storage-migrate`; the
+  checkout-relative path is only mentioned in the "From a checkout" install
+  section now, where it's actually relevant. No script changes.
 
 ## [1.2.1]
 
