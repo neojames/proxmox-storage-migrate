@@ -1,3 +1,12 @@
+proxmox-storage-migrate (1.2.0-beta.1) unstable; urgency=medium
+
+  * -s/-t are now required (from a flag or the config file below); they no
+    longer default to empty and silently fail deep in storage.cfg lookup.
+  * Add /etc/default/proxmox-storage-migrate: an optional config file
+    setting new defaults for any flag. Command-line flags still override it.
+
+ -- James Bolton <james@neojames.me>  Tue, 21 Jul 2026 17:40:00 +0100
+
 proxmox-storage-migrate (1.1.0) unstable; urgency=medium
 
   * Running containers are now always stopped, migrated, and restarted

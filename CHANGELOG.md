@@ -2,6 +2,24 @@
 
 All notable changes to this project are documented here.
 
+## [1.2.0-beta.1]
+
+Beta: tagged for testing, not published as a release (no `.deb`/apt-repo
+publish — see the tag notes).
+
+### Changed
+- `-s`/`-t` no longer have defaults — they're required, from *some* source
+  (a flag or the new config file below). Omitting both fails fast with a
+  clear error and the usage text, instead of falling through to a confusing
+  "storage '' not defined" error.
+
+### Added
+- `/etc/default/proxmox-storage-migrate`: an optional config file setting
+  new defaults for any flag (`SRC_STORAGE`, `FORMAT`, `MAX_PARALLEL`, …).
+  Precedence is built-in default < config file < command-line flag. Ships
+  commented-out via the `.deb`; template also at
+  `config/proxmox-storage-migrate.default` for checkout installs.
+
 ## [1.1.0]
 
 ### Changed

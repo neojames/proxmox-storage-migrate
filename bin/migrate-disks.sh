@@ -26,8 +26,8 @@
 # Run this ON a Proxmox host as root.
 #
 # Usage: migrate-disks [options]
-#   -s <storage>  Source storage
-#   -t <storage>  Target storage
+#   -s <storage>  Source storage         (required)
+#   -t <storage>  Target storage         (required)
 #   -f <format>   Preferred VM format     (default: qcow2; auto-falls back to raw)
 #   -p <N>        Max guests in parallel  (default: 5)
 #   -A            All nodes (whole cluster). Default is this node only.
@@ -55,12 +55,22 @@ GRACEFUL_TIMEOUT=300      # wait this long for a graceful shutdown, then force-s
 DRY_RUN=0
 ASSUME_YES=0
 
+# ---- config file (optional) ------------------------------------------------
+# Overrides any of the defaults above if present; command-line flags (parsed
+# next) still win over this file. See /etc/default/proxmox-storage-migrate
+# (installed commented-out by the .deb) for what each setting does.
+CONFIG_FILE="/etc/default/proxmox-storage-migrate"
+if [ -r "$CONFIG_FILE" ]; then
+  # shellcheck source=/dev/null
+  source "$CONFIG_FILE"
+fi
+
 # ---- help -----------------------------------------------------------------
 usage() {
   cat <<'USAGE'
 Usage: migrate-disks [options]
-  -s <storage>  Source storage
-  -t <storage>  Target storage
+  -s <storage>  Source storage         (required)
+  -t <storage>  Target storage         (required)
   -f <format>   Preferred VM format     (default: qcow2; auto-falls back to raw)
   -p <N>        Max guests in parallel  (default: 5)
   -A            All nodes (whole cluster). Default is this node only.
@@ -96,6 +106,10 @@ while getopts ":s:t:f:p:AVCSknyh" opt; do
 done
 
 # ---- sanity checks --------------------------------------------------------
+if [ -z "$SRC_STORAGE" ] || [ -z "$DST_STORAGE" ]; then
+  echo "ERROR: -s <source storage> and -t <target storage> are required." >&2
+  usage 1
+fi
 [[ "$MAX_PARALLEL" =~ ^[1-9][0-9]*$ ]] || { echo "ERROR: -p must be a positive integer." >&2; exit 1; }
 if [ "$INCLUDE_VMS" -eq 0 ] && [ "$INCLUDE_CTS" -eq 0 ]; then
   echo "ERROR: -V and -C are mutually exclusive." >&2; exit 1

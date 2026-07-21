@@ -108,8 +108,8 @@ beyond `bash`, `python3`, and (for cluster mode) `openssh-client`.
 
 ```
 bin/migrate-disks.sh [options]
-  -s <storage>  Source storage        (default: Neohosting)
-  -t <storage>  Target storage        (default: TN01SSD1600-NeoHosting)
+  -s <storage>  Source storage        (required)
+  -t <storage>  Target storage        (required)
   -f <format>   Preferred VM format    (default: qcow2; auto-falls back to raw)
   -p <N>        Max guests in parallel (default: 5)
   -A            All nodes (whole cluster). Default is this node only.
@@ -122,8 +122,15 @@ bin/migrate-disks.sh [options]
   -h            Help
 ```
 
-The default source/target storage names are placeholders — set your own with
-`-s`/`-t` (or edit the defaults at the top of the script).
+`-s`/`-t` have no defaults — the minimum viable command is:
+
+```bash
+bin/migrate-disks.sh -s <source storage> -t <target storage>
+```
+
+Omit either one (or leave it empty) and the script exits immediately with an
+error and the usage text, rather than guessing or falling through to a
+confusing "storage not defined" error further down.
 
 ### Examples
 
@@ -140,6 +147,47 @@ bin/migrate-disks.sh -A -V -S -p 8 -s ceph -t ssd-pool
 # Keep the source copies (don't delete after move)
 bin/migrate-disks.sh -s a -t b -k
 ```
+
+## Config file
+
+`/etc/default/proxmox-storage-migrate` sets new defaults for any of the
+options above, so a host that always migrates the same way doesn't need the
+flags repeated on every run. It's entirely optional:
+
+- If the file doesn't exist, nothing changes — the script's built-in defaults
+  apply, same as before this file existed.
+- Every setting inside it is also optional — comment out (or omit) any line
+  to keep that one setting's built-in default.
+- **Command-line flags always win** over this file, which in turn always wins
+  over the script's built-in defaults. Precedence is: flag > config file >
+  built-in default.
+- The `.deb` installs it commented-out at that path; from a checkout, copy
+  [`config/proxmox-storage-migrate.default`](config/proxmox-storage-migrate.default)
+  there yourself.
+
+It's a plain shell snippet — the file is `source`d, so values need quoting
+the way you'd quote a shell variable assignment. Every setting is documented
+inline in the file itself:
+
+```bash
+# /etc/default/proxmox-storage-migrate
+SRC_STORAGE="local-lvm"      # -s — no built-in default, so set it here or on
+DST_STORAGE="ssd-pool"       # -t   the command line (or the script errors out)
+FORMAT="qcow2"                # -f — default: qcow2
+MAX_PARALLEL=5                 # -p — default: 5
+CLUSTER=0                      # -A — 0 = this node only, 1 = whole cluster
+INCLUDE_VMS=1                  # -C sets this to 0 for that run
+INCLUDE_CTS=1                  # -V sets this to 0 for that run
+STOP_FOR_OFFLINE=0             # -S — 0 = skip+report tpmstate, 1 = auto-handle
+DELETE_SRC="--delete"          # -k sets this to "" for that run
+GRACEFUL_TIMEOUT=300           # config-file only, no matching flag
+DRY_RUN=0                      # -n — be careful setting this to 1 here
+ASSUME_YES=0                   # -y — be careful setting this to 1 here
+```
+
+This is the same set of internal variables the script itself uses, so
+whatever's set here is exactly what a matching command-line flag would have
+set — nothing is translated or reinterpreted.
 
 ## How TPM state is handled
 

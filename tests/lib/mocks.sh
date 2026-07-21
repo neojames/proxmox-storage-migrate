@@ -140,16 +140,41 @@ ssh() {
 
 export -f qm pct ssh _mock_find_conf
 
-# mock_run <args...>  — run the script against the fake tree, returning its
-# stdout+stderr. Path-redirects /etc/pve to the fake tree. Defaults -s/-t to
-# the storage names every test's mock_add_storage sets up (the script itself
-# has no built-in defaults); pass -s/-t again to override.
-mock_run() {
+# mock_set_config <content>  — write /etc/default/proxmox-storage-migrate
+# (as seen by the script under test) with the given content. Without this,
+# the redirected path simply doesn't exist, matching a real host that never
+# created the file.
+mock_set_config() {
+  mkdir -p "$MOCK_ROOT/etc/default"
+  printf '%s\n' "$1" > "$MOCK_ROOT/etc/default/proxmox-storage-migrate"
+}
+
+# Shared by mock_run/mock_run_no_defaults: path-redirect the script under
+# test's hard-coded paths into the fake tree and write it out.
+_mock_build_redir() {
   local redir="$MOCK_ROOT/mig.sh"
   sed -e 's#/etc/pve#'"$MOCK_PVE"'#g' \
       -e 's#/var/log/migrate-disks-#'"$MOCK_ROOT"'/var/log/migrate-disks-#g' \
+      -e 's#/etc/default/proxmox-storage-migrate#'"$MOCK_ROOT"'/etc/default/proxmox-storage-migrate#g' \
       "$SCRIPT_UNDER_TEST" > "$redir"
+  echo "$redir"
+}
+
+# mock_run <args...>  — run the script against the fake tree, returning its
+# stdout+stderr. Defaults -s/-t to the storage names every test's
+# mock_add_storage sets up (the script itself has no built-in defaults);
+# pass -s/-t again to override.
+mock_run() {
+  local redir; redir="$(_mock_build_redir)"
   bash "$redir" -s Neohosting -t TN01SSD1600-NeoHosting "$@" 2>&1
+}
+
+# mock_run_no_defaults <args...>  — like mock_run, but without injecting
+# -s/-t, for exercising what happens when they're genuinely not given on the
+# command line (e.g. relying on /etc/default/proxmox-storage-migrate instead).
+mock_run_no_defaults() {
+  local redir; redir="$(_mock_build_redir)"
+  bash "$redir" "$@" 2>&1
 }
 
 # --- tiny assertion helpers ------------------------------------------------

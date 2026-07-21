@@ -5,3 +5,4 @@
 
 override_dh_auto_install:
 	install -Dm755 bin/migrate-disks.sh debian/proxmox-storage-migrate/usr/bin/migrate-disks
+	install -Dm644 config/proxmox-storage-migrate.default debian/proxmox-storage-migrate/etc/default/proxmox-storage-migrate

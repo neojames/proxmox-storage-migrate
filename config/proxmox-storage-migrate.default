@@ -1,0 +1,63 @@
+# /etc/default/proxmox-storage-migrate
+#
+# Default values for migrate-disks. This file is sourced by the script if
+# present — every setting below is optional. Leave a line commented out (or
+# delete this file entirely) to keep the script's built-in default. Anything
+# set here can still be overridden per-run with the matching command-line
+# flag: command-line flags always win over this file.
+#
+# See `migrate-disks -h` or `man migrate-disks` for the full flag reference.
+
+# Source storage (-s). No built-in default: the script exits with an error
+# if this is unset here AND no -s is given on the command line. Set it here
+# to skip typing -s on a host that only ever migrates from one storage.
+#SRC_STORAGE=""
+
+# Target storage (-t). Same deal as SRC_STORAGE above — required somehow,
+# either here or on the command line.
+#DST_STORAGE=""
+
+# Preferred VM disk format (-f). Automatically downgrades to raw on storage
+# that can't hold it (LVM/LVM-thin/ZFS/Ceph/RBD/iSCSI) regardless of this
+# setting.
+#FORMAT="qcow2"
+
+# Max guests migrated in parallel (-p). Must be a positive integer.
+#MAX_PARALLEL=5
+
+# Whole-cluster mode (-A). 0 = this node only (default), 1 = every node in
+# the cluster.
+#CLUSTER=0
+
+# Which guest types to include. Both must not be 0 (there'd be nothing to
+# migrate) — the script rejects that combination regardless of where it came
+# from. -V on the command line forces INCLUDE_CTS=0 for that run; -C forces
+# INCLUDE_VMS=0. Set one to 0 here to make a host VM-only or container-only
+# by default.
+#INCLUDE_VMS=1
+#INCLUDE_CTS=1
+
+# Stop/move/start VMs to migrate offline-only volumes, i.e. tpmstate (-S).
+# 0 = skip running VMs' tpmstate and report it (default). 1 = defer it to a
+# phase that shuts the VM down (gracefully, then forcibly), moves it, and
+# restarts the VM, automatically, every run.
+#STOP_FOR_OFFLINE=0
+
+# Delete the source volume after a successful move (-k, inverted): the
+# literal string "--delete" deletes it (default); an empty string keeps
+# source volumes, equivalent to always passing -k.
+#DELETE_SRC="--delete"
+
+# Seconds to wait for a graceful shutdown before force-stopping. Used by both
+# the tpmstate (VM) and container shutdown phases. No command-line flag for
+# this one — it's config-file only.
+#GRACEFUL_TIMEOUT=300
+
+# Dry run by default (-n). Leave this at 0 and pass -n explicitly per-run
+# instead in almost all cases — setting it to 1 here means every invocation
+# is a dry run (nothing actually moves) until this file is changed back.
+#DRY_RUN=0
+
+# Skip the confirmation prompt by default (-y). Be careful combining this
+# with DRY_RUN=0 above: every run then proceeds without asking first.
+#ASSUME_YES=0

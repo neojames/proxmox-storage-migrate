@@ -13,6 +13,7 @@ script; `tests/` exercises it against a mocked Proxmox environment.
 
 ```
 bin/migrate-disks.sh     the tool (all logic lives here)
+config/*.default         template for /etc/default/proxmox-storage-migrate
 tests/run-tests.sh       runs every tests/test_*.sh
 tests/lib/mocks.sh       fake /etc/pve + qm/pct/pvesm/ssh stubs + assertions
 tests/test_*.sh          one file per behaviour area
@@ -63,6 +64,27 @@ an env with the `mock_add_*` helpers, call `mock_run <args>`, and assert with
    `results-deferred/`, the latter shared by both deferred phases) into the
    final Success/Failed/Skipped/Raw-fallback line.
 
+## Config file
+
+`/etc/default/proxmox-storage-migrate` is sourced right after the hardcoded
+defaults are set and *before* `getopts` parsing — so precedence is
+built-in default < config file < command-line flag. It's entirely optional
+(the script just checks `[ -r "$CONFIG_FILE" ]`) and sets the exact same
+internal variables the flags do (`SRC_STORAGE`, `FORMAT`, `DELETE_SRC`, …) —
+no translation layer, so whatever's in the file is exactly what a matching
+flag would have set. The canonical template lives at
+`config/proxmox-storage-migrate.default` (installed commented-out by the
+`.deb`); keep the two in sync with each other and with the flag reference in
+`usage()`/the man page/README if you add or rename a variable. `-s`/`-t`
+being "required" really means "required from *some* source" — the config
+file can satisfy it just as well as a flag.
+
+Tests can't write to the real `/etc/default/...`, so `tests/lib/mocks.sh`
+path-redirects it into the mock tree (same trick as `/etc/pve`) and exposes
+`mock_set_config`. `mock_run` always injects `-s`/`-t` defaults (since the
+script itself doesn't); use `mock_run_no_defaults` instead when a test needs
+to exercise what happens with genuinely nothing on the command line.
+
 ## Invariants — don't break these
 
 - **A guest is locked during a move.** Never move two volumes of the same guest
@@ -97,7 +119,9 @@ an env with the `mock_add_*` helpers, call `mock_run <args>`, and assert with
 ## Packaging & releases
 
 - `debian/` packages `bin/migrate-disks.sh` as `/usr/bin/migrate-disks` (a
-  standard `debhelper` package; `man/migrate-disks.1` ships as its man page).
+  standard `debhelper` package; `man/migrate-disks.1` ships as its man page;
+  `config/proxmox-storage-migrate.default` ships as
+  `/etc/default/proxmox-storage-migrate`, a conffile since it's under `/etc`).
   `debian/changelog`'s top version must match the git tag being released —
   bump both together, and keep `CHANGELOG.md` in sync.
 - Pushing a `v*` tag runs `.github/workflows/release.yml`, which: re-lints and

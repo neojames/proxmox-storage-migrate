@@ -19,10 +19,10 @@ Must be run as root on a Proxmox VE host.
 .SH OPTIONS
 .TP
 .BI \-s \ storage
-Source storage.
+Source storage. Required; there is no default.
 .TP
 .BI \-t \ storage
-Target storage.
+Target storage. Required; there is no default.
 .TP
 .BI \-f \ format
 Preferred VM disk format (default: qcow2; automatically falls back to raw
@@ -67,6 +67,15 @@ migrated, and is restarted in the same deferred fashion as TPM state.
 This tool deletes the source volume after a successful move unless
 \fB\-k\fR is given, and can stop and restart guests. Always run with
 \fB\-n\fR first to review the plan before committing.
+.SH FILES
+.TP
+.I /etc/default/proxmox-storage-migrate
+Optional. Sets new defaults for any option above; a matching command-line
+flag still overrides it, and this file overrides the script's own built-in
+defaults. A setting left commented out (or the file missing entirely) falls
+back to the script's built-in default, same as before this file existed.
+Installed commented-out by the package; every setting is documented inline
+in the file.
 .SH SEE ALSO
 Full documentation and source:
 .br
