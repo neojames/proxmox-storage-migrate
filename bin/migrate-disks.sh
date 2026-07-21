@@ -125,9 +125,11 @@ log() { echo "[$(date '+%F %T')] $*" | tee -a "$MAIN_LOG"; }
 [ "$DRY_RUN" -eq 1 ] && MAX_PARALLEL=1
 
 # ---- pre-flight: pick a VM format the target can actually store -----------
+# QCOW2/VMDK only live on file storages. If the target is a block backend that
+# can only hold raw, downgrade the requested (file-only) format up front.
 DOWNGRADED=0
-case " qcow2 vmdk " in
-  *" $FORMAT "*)
+case "$FORMAT" in
+  qcow2|vmdk)
     case "$DST_TYPE" in
       lvm|lvmthin|zfspool|rbd|iscsi|iscsidirect|drbd) FORMAT="raw"; DOWNGRADED=1 ;;
     esac ;;

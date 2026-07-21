@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - name: Lint (warning severity)
+        run: |
+          shellcheck -x --severity=warning \
+            bin/migrate-disks.sh \
+            tests/run-tests.sh \
+            tests/lib/mocks.sh \
+            tests/test_*.sh
+
+  test:
+    name: test suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show versions
+        run: bash --version | head -1 && python3 --version
+      - name: Run tests
+        run: bash tests/run-tests.sh

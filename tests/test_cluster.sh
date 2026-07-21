@@ -2,6 +2,7 @@
 # Cluster mode (-A): guests on all nodes are discovered; moves run locally for
 # local guests and over SSH (to the node IP, with HostKeyAlias) for remote ones.
 set -euo pipefail
+# shellcheck source=lib/mocks.sh
 source "$(dirname "${BASH_SOURCE[0]}")/lib/mocks.sh"
 trap mock_env_cleanup EXIT
 

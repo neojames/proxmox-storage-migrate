@@ -2,6 +2,7 @@
 # Local-node discovery: VMs and containers on the source storage are found and
 # moved; CD-ROMs and bind mounts are ignored; snapshot sections don't leak in.
 set -euo pipefail
+# shellcheck source=lib/mocks.sh
 source "$(dirname "${BASH_SOURCE[0]}")/lib/mocks.sh"
 trap mock_env_cleanup EXIT
 

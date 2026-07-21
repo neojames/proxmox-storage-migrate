@@ -1,5 +1,7 @@
 # proxmox-storage-migrate
 
+![CI](https://github.com/OWNER/proxmox-storage-migrate/actions/workflows/ci.yml/badge.svg)
+
 Bulk-migrate Proxmox VE guest storage from one storage to another — across an
 entire cluster, in parallel — with sensible handling of the awkward cases
 (QCOW2 vs raw, TPM state, containers, running guests).

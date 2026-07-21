@@ -22,6 +22,9 @@ Initial release. A single Bash tool to bulk-migrate Proxmox VE guest storage.
   reachability preflight.
 - Per-move verification and detailed logging under a unique per-run directory.
 
+- GitHub Actions CI runs shellcheck (warning severity) and the test suite on
+  every push and PR.
+
 ### Notes
 - Source volumes are deleted after a successful move unless `-k` is given.
 - Ships with a mock-based test suite that needs no real Proxmox.

@@ -2,6 +2,7 @@
 # Concurrency: never more than -p moves at once, and a single guest's volumes
 # never overlap each other.
 set -euo pipefail
+# shellcheck source=lib/mocks.sh
 source "$(dirname "${BASH_SOURCE[0]}")/lib/mocks.sh"
 trap mock_env_cleanup EXIT
 

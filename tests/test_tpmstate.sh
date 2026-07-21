@@ -2,6 +2,7 @@
 # TPM state: forced raw (never qcow2); skipped on a running VM without -S;
 # deferred to phase 2 with graceful-then-force shutdown when -S is given.
 set -euo pipefail
+# shellcheck source=lib/mocks.sh
 source "$(dirname "${BASH_SOURCE[0]}")/lib/mocks.sh"
 trap mock_env_cleanup EXIT
 

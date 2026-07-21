@@ -7,7 +7,7 @@
 #   With no args, runs every tests/test_*.sh. With args, runs only those.
 set -uo pipefail
 
-cd "$(dirname "${BASH_SOURCE[0]}")"
+cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
 
 command -v python3 >/dev/null 2>&1 || { echo "python3 is required for the tests"; exit 1; }
 

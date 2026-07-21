@@ -2,6 +2,7 @@
 # Format handling: block-type target downgrades to raw up front; a file-type
 # target that rejects qcow2 at runtime falls back to raw per-disk.
 set -euo pipefail
+# shellcheck source=lib/mocks.sh
 source "$(dirname "${BASH_SOURCE[0]}")/lib/mocks.sh"
 trap mock_env_cleanup EXIT
 
