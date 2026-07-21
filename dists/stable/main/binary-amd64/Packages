@@ -1,0 +1,50 @@
+Package: proxmox-storage-migrate
+Version: 1.2.0
+Architecture: all
+Maintainer: James Bolton <james@neojames.me>
+Installed-Size: 57
+Depends: python3, openssh-client
+Filename: pool/main/p/proxmox-storage-migrate/proxmox-storage-migrate_1.2.0_all.deb
+Size: 22112
+MD5sum: d7d96e8811bd90132ee1b71e368fc60d
+SHA1: 7658812bfcb002c1a54d84846717e008b63e8491
+SHA256: 7d3b090b795ead817a5d7f16294f7ca33c4e196eee4d38e232f62787c2146bd8
+Section: admin
+Priority: optional
+Homepage: https://github.com/neojames/proxmox-storage-migrate
+Description: Bulk-migrate Proxmox VE guest storage between storages
+ proxmox-storage-migrate bulk-migrates Proxmox VE guest storage (VM disks and
+ container volumes) from one storage to another, optionally across an
+ entire cluster, in parallel.
+ .
+ It wraps qm move-disk and pct move-volume with discovery, parallelism,
+ QCOW2/raw format handling, TPM state and container shutdown handling,
+ per-move verification, and logging.
+ .
+ Must be run as root on a Proxmox VE host (needs qm and/or pct).
+
+Package: proxmox-storage-migrate
+Version: 1.2.1
+Architecture: all
+Maintainer: James Bolton <james@neojames.me>
+Installed-Size: 58
+Depends: python3, openssh-client
+Filename: pool/main/p/proxmox-storage-migrate/proxmox-storage-migrate_1.2.1_all.deb
+Size: 22622
+MD5sum: 17b07ff5d44c4f81813810179ce5df31
+SHA1: 6023e2aaddd07addcacb77755271596da5b37570
+SHA256: e6c84fe42b8457d61ce15447dc2d441c95df30a42c0df1deae283cad16f0f2f1
+Section: admin
+Priority: optional
+Homepage: https://github.com/neojames/proxmox-storage-migrate
+Description: Bulk-migrate Proxmox VE guest storage between storages
+ proxmox-storage-migrate bulk-migrates Proxmox VE guest storage (VM disks and
+ container volumes) from one storage to another, optionally across an
+ entire cluster, in parallel.
+ .
+ It wraps qm move-disk and pct move-volume with discovery, parallelism,
+ QCOW2/raw format handling, TPM state and container shutdown handling,
+ per-move verification, and logging.
+ .
+ Must be run as root on a Proxmox VE host (needs qm and/or pct).
+

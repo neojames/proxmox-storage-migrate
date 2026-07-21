@@ -2,15 +2,15 @@ Origin: proxmox-storage-migrate
 Label: proxmox-storage-migrate
 Suite: stable
 Codename: stable
-Architectures: all
+Architectures: amd64
 Components: main
-Date: Tue, 21 Jul 2026 17:20:17 UTC
+Date: Tue, 21 Jul 2026 17:28:50 UTC
 MD5Sum:
- 8e7bb7752bfe599cc4f6c8cf70face05             1014 main/binary-all/Packages
- bb7ffc7a71b442cdb98df51bb96b755e              617 main/binary-all/Packages.gz
+ 54603f8209197f5e7cd176123a87915a             2028 main/binary-amd64/Packages
+ 6911ac121645ea1ddd235f8842b686a7              749 main/binary-amd64/Packages.gz
 SHA1:
- 4ba955dd7d99494fa44ea191b242ebc84db7ca2a             1014 main/binary-all/Packages
- 9191fb5ab613d21e31f1169556782197804211dc              617 main/binary-all/Packages.gz
+ 2274b18b7baa9abd83514b3e389d524d1bba21ee             2028 main/binary-amd64/Packages
+ eafdd9163f1e92acf7e8a639dcef5ffc8764e497              749 main/binary-amd64/Packages.gz
 SHA256:
- 59d925668619e63bbd6537b7daea7d8322aecbc468ef863d10ff3dced142ab02             1014 main/binary-all/Packages
- 42b285928ffe9c4184bf439e3d2d0ca1c31f4053fedbed174cfe8e96147e65c5              617 main/binary-all/Packages.gz
+ 68696c70429adbf0284cda07ae2203108b02800ea5862f815e2ad05d172173f6             2028 main/binary-amd64/Packages
+ aa89bfe3a922526b7688ca7e6e2f240fa27d5df6c894ffcfed1c6763ecba5ffe              749 main/binary-amd64/Packages.gz
