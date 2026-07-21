@@ -2,12 +2,13 @@
 
 All notable changes to this project are documented here.
 
-## [1.2.0-beta.2]
+## [1.2.0-beta.3]
 
 Beta: tagged for testing. A `*-beta*` tag builds the `.deb` and attaches it to
 a GitHub Release marked **Pre-release** (a stable, no-auth download link) —
 but unlike a `v*` tag, never publishes it to the apt repo. (`-beta.1` predates
-this pipeline and never got a `.deb` built; no functional changes since then.)
+this pipeline and never got a `.deb` built; `-beta.2` used a workflow artifact
+instead of a pre-release. No functional changes since `-beta.1`.)
 
 ### Changed
 - `-s`/`-t` no longer have defaults — they're required, from *some* source

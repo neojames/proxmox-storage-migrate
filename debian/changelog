@@ -1,3 +1,10 @@
+proxmox-storage-migrate (1.2.0-beta.3) unstable; urgency=medium
+
+  * No functional changes — re-tagged to exercise beta.yml attaching the
+    .deb to a GitHub pre-release instead of a workflow artifact.
+
+ -- James Bolton <james@neojames.me>  Tue, 21 Jul 2026 18:05:00 +0100
+
 proxmox-storage-migrate (1.2.0-beta.2) unstable; urgency=medium
 
   * No functional changes — re-tagged to exercise the new beta.yml build
