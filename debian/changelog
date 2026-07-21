@@ -1,3 +1,10 @@
+proxmox-storage-migrate (1.2.0-beta.2) unstable; urgency=medium
+
+  * No functional changes — re-tagged to exercise the new beta.yml build
+    pipeline (1.2.0-beta.1 predates it and never got a .deb built).
+
+ -- James Bolton <james@neojames.me>  Tue, 21 Jul 2026 17:55:00 +0100
+
 proxmox-storage-migrate (1.2.0-beta.1) unstable; urgency=medium
 
   * -s/-t are now required (from a flag or the config file below); they no
