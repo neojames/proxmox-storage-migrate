@@ -289,10 +289,13 @@ Requires `bash` and `python3`. See `tests/lib/mocks.sh` for the harness.
 
 ## Contributing
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to propose changes, run the
+tests/lint locally, and what a PR is expected to cover.
 [CLAUDE.md](CLAUDE.md) documents the architecture, invariants, and packaging
-pipeline in more depth than this README — start there before changing the
-script, tests, or `.github/workflows/`. [CHANGELOG.md](CHANGELOG.md) tracks
-what shipped in each version.
+pipeline in more depth — start there before changing the script, tests, or
+`.github/workflows/`. [CHANGELOG.md](CHANGELOG.md) tracks what shipped in
+each version. Participation is governed by the
+[Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
