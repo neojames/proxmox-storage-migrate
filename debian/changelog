@@ -1,3 +1,11 @@
+proxmox-storage-migrate (1.2.0-beta.4) unstable; urgency=medium
+
+  * Breaking: the installed command is now /usr/bin/proxmox-storage-migrate
+    (was /usr/bin/migrate-disks), matching the package/repo name. The source
+    script, man page, and per-run log directory prefix are renamed to match.
+
+ -- James Bolton <james@neojames.me>  Tue, 21 Jul 2026 19:00:00 +0100
+
 proxmox-storage-migrate (1.2.0-beta.3) unstable; urgency=medium
 
   * No functional changes — re-tagged to exercise beta.yml attaching the

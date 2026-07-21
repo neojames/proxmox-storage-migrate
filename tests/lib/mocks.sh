@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 #
-# Shared test harness for migrate-disks.sh.
+# Shared test harness for proxmox-storage-migrate.
 #
 # These helpers let the test suite run the real script against a *fake* Proxmox
 # environment — no cluster, no root, no qm/pct/pvesm required. They:
@@ -14,7 +14,7 @@
 
 # Absolute path to the script under test (resolved from this file's location).
 _TESTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SCRIPT_UNDER_TEST="$_TESTS_DIR/../bin/migrate-disks.sh"
+SCRIPT_UNDER_TEST="$_TESTS_DIR/../bin/proxmox-storage-migrate"
 
 # Populated by mock_env_new; consumed by the stubs and by mock_run.
 export MOCK_ROOT="" MOCK_PVE="" MOCK_STATE="" MOCK_CALLS=""
@@ -154,7 +154,7 @@ mock_set_config() {
 _mock_build_redir() {
   local redir="$MOCK_ROOT/mig.sh"
   sed -e 's#/etc/pve#'"$MOCK_PVE"'#g' \
-      -e 's#/var/log/migrate-disks-#'"$MOCK_ROOT"'/var/log/migrate-disks-#g' \
+      -e 's#/var/log/proxmox-storage-migrate-#'"$MOCK_ROOT"'/var/log/proxmox-storage-migrate-#g' \
       -e 's#/etc/default/proxmox-storage-migrate#'"$MOCK_ROOT"'/etc/default/proxmox-storage-migrate#g' \
       "$SCRIPT_UNDER_TEST" > "$redir"
   echo "$redir"

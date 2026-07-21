@@ -53,4 +53,4 @@ apt-get update
 log "Installing $PACKAGE..."
 apt-get install -y "$PACKAGE"
 
-log "Done. Run 'migrate-disks -h' to get started; future updates: apt update && apt upgrade."
+log "Done. Run 'proxmox-storage-migrate -h' to get started; future updates: apt update && apt upgrade."

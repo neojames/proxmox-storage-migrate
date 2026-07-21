@@ -4,19 +4,19 @@ Guidance for Claude Code (and other contributors) working in this repo.
 
 ## What this is
 
-A single Bash tool, `bin/migrate-disks.sh`, that bulk-migrates Proxmox VE guest
-storage (VM disks and container volumes) from one storage to another, optionally
-across a whole cluster, in parallel. Everything of substance lives in that one
-script; `tests/` exercises it against a mocked Proxmox environment.
+A single Bash tool, `bin/proxmox-storage-migrate`, that bulk-migrates Proxmox
+VE guest storage (VM disks and container volumes) from one storage to another,
+optionally across a whole cluster, in parallel. Everything of substance lives
+in that one script; `tests/` exercises it against a mocked Proxmox environment.
 
 ## Repo layout
 
 ```
-bin/migrate-disks.sh     the tool (all logic lives here)
-config/*.default         template for /etc/default/proxmox-storage-migrate
-tests/run-tests.sh       runs every tests/test_*.sh
-tests/lib/mocks.sh       fake /etc/pve + qm/pct/pvesm/ssh stubs + assertions
-tests/test_*.sh          one file per behaviour area
+bin/proxmox-storage-migrate   the tool (all logic lives here)
+config/*.default              template for /etc/default/proxmox-storage-migrate
+tests/run-tests.sh            runs every tests/test_*.sh
+tests/lib/mocks.sh            fake /etc/pve + qm/pct/pvesm/ssh stubs + assertions
+tests/test_*.sh               one file per behaviour area
 ```
 
 ## Running the tests
@@ -118,8 +118,9 @@ to exercise what happens with genuinely nothing on the command line.
 
 ## Packaging & releases
 
-- `debian/` packages `bin/migrate-disks.sh` as `/usr/bin/migrate-disks` (a
-  standard `debhelper` package; `man/migrate-disks.1` ships as its man page;
+- `debian/` packages `bin/proxmox-storage-migrate` as
+  `/usr/bin/proxmox-storage-migrate` (a standard `debhelper` package;
+  `man/proxmox-storage-migrate.1` ships as its man page;
   `config/proxmox-storage-migrate.default` ships as
   `/etc/default/proxmox-storage-migrate`, a conffile since it's under `/etc`).
   `debian/changelog`'s top version must match the git tag being released —

@@ -19,7 +19,7 @@ echo "[case] both -s and -t missing (empty)"
 setup
 rc=0; out="$(mock_run -s '' -t '' -y)" || rc=$?
 assert_contains "$out" "ERROR: -s <source storage> and -t <target storage> are required" "clear required-args error"
-assert_contains "$out" "Usage: migrate-disks" "usage printed on error"
+assert_contains "$out" "Usage: proxmox-storage-migrate" "usage printed on error"
 [ "$rc" -eq 1 ] && echo "  PASS: exit code 1" || { echo "  FAIL: exit code 1 (got $rc)"; false; }
 mock_env_cleanup
 

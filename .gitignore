@@ -1,5 +1,5 @@
 # runtime logs (the tool writes here on a real host)
-/var/log/migrate-disks-*/
+/var/log/proxmox-storage-migrate-*/
 *.log
 
 # editor / OS cruft

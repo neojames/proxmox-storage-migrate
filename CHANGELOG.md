@@ -2,6 +2,19 @@
 
 All notable changes to this project are documented here.
 
+## [1.2.0-beta.4]
+
+Beta: tagged for testing. See the [1.2.0-beta.3](#120-beta3) entry below for
+what the beta pipeline does.
+
+### Changed
+- **Breaking:** the installed command is now `proxmox-storage-migrate` (was
+  `migrate-disks`), matching the package/repo name. The source script is
+  likewise `bin/proxmox-storage-migrate`, the man page is
+  `proxmox-storage-migrate(1)`, and per-run logs move to
+  `/var/log/proxmox-storage-migrate-<timestamp>-<pid>/`. Update any scripts,
+  cron jobs, or aliases that invoke `migrate-disks`.
+
 ## [1.2.0-beta.3]
 
 Beta: tagged for testing. A `*-beta*` tag builds the `.deb` and attaches it to

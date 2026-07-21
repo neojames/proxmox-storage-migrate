@@ -25,14 +25,14 @@ prioritized once confirmed.
 
 Please include, where relevant:
 
-- The version/commit of `migrate-disks.sh` you're running.
+- The version/commit of `proxmox-storage-migrate` you're running.
 - Proxmox VE version and cluster topology (single node vs. cluster).
 - The exact command-line flags used and a minimal reproduction (guest config,
   storage config, or mock test case if possible).
 
 ## Scope and Threat Model
 
-`bin/migrate-disks.sh` is intended to be run **by a trusted administrator, as
+`bin/proxmox-storage-migrate` is intended to be run **by a trusted administrator, as
 root, on a Proxmox VE node**. Given that, please keep the following in mind
 when assessing impact:
 

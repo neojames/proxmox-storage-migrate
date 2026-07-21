@@ -11,7 +11,7 @@ Package: proxmox-storage-migrate
 Architecture: all
 Depends: ${misc:Depends}, python3, openssh-client
 Description: Bulk-migrate Proxmox VE guest storage between storages
- migrate-disks bulk-migrates Proxmox VE guest storage (VM disks and
+ proxmox-storage-migrate bulk-migrates Proxmox VE guest storage (VM disks and
  container volumes) from one storage to another, optionally across an
  entire cluster, in parallel.
  .

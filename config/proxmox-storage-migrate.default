@@ -1,12 +1,12 @@
 # /etc/default/proxmox-storage-migrate
 #
-# Default values for migrate-disks. This file is sourced by the script if
+# Default values for proxmox-storage-migrate. This file is sourced by the script if
 # present — every setting below is optional. Leave a line commented out (or
 # delete this file entirely) to keep the script's built-in default. Anything
 # set here can still be overridden per-run with the matching command-line
 # flag: command-line flags always win over this file.
 #
-# See `migrate-disks -h` or `man migrate-disks` for the full flag reference.
+# See `proxmox-storage-migrate -h` or `man proxmox-storage-migrate` for the full flag reference.
 
 # Source storage (-s). No built-in default: the script exits with an error
 # if this is unset here AND no -s is given on the command line. Set it here

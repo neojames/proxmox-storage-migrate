@@ -24,7 +24,7 @@ jobs:
       - name: Lint
         run: |
           shellcheck -x --severity=warning \
-            bin/migrate-disks.sh \
+            bin/proxmox-storage-migrate \
             install.sh \
             tests/run-tests.sh \
             tests/lib/mocks.sh \

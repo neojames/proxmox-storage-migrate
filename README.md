@@ -61,7 +61,7 @@ every disk of every guest by hand.
   guest — locally, or over SSH to remote nodes the way Proxmox itself does
   (node IP + `HostKeyAlias`, accepting new host keys).
 - **Verifies every move** by re-reading the guest config, and writes a full log
-  plus per-guest logs under `/var/log/migrate-disks-<timestamp>-<pid>/`.
+  plus per-guest logs under `/var/log/proxmox-storage-migrate-<timestamp>-<pid>/`.
 
 ## Requirements
 
@@ -102,9 +102,10 @@ apt install proxmox-storage-migrate
 From then on, `apt update && apt upgrade` picks up new releases. Packages are
 signed with a repo-dedicated GPG key (not tied to any personal identity).
 
-This installs the tool as `migrate-disks` on your `PATH`, plus a man page
-(`man migrate-disks`). From here on, replace `bin/migrate-disks.sh` in the
-examples below with `migrate-disks`.
+This installs the tool as `proxmox-storage-migrate` on your `PATH`, plus a man
+page (`man proxmox-storage-migrate`). From here on, replace
+`bin/proxmox-storage-migrate` in the examples below with
+`proxmox-storage-migrate`.
 
 ### From a standalone `.deb`
 
@@ -122,7 +123,7 @@ checkout (needs `debhelper` and `devscripts`).
 
 ### From a checkout
 
-Just run `bin/migrate-disks.sh` directly — no build step, no dependencies
+Just run `bin/proxmox-storage-migrate` directly — no build step, no dependencies
 beyond `bash`, `python3`, and (for cluster mode) `openssh-client`.
 
 ### Beta builds
@@ -141,7 +142,7 @@ apt install ./proxmox-storage-migrate_1.2.0-beta.1_all.deb
 ## Usage
 
 ```
-bin/migrate-disks.sh [options]
+bin/proxmox-storage-migrate [options]
   -s <storage>  Source storage        (required)
   -t <storage>  Target storage        (required)
   -f <format>   Preferred VM format    (default: qcow2; auto-falls back to raw)
@@ -159,7 +160,7 @@ bin/migrate-disks.sh [options]
 `-s`/`-t` have no defaults — the minimum viable command is:
 
 ```bash
-bin/migrate-disks.sh -s <source storage> -t <target storage>
+bin/proxmox-storage-migrate -s <source storage> -t <target storage>
 ```
 
 Omit either one (or leave it empty), and neither is set in the
@@ -171,16 +172,16 @@ confusing "storage not defined" error further down.
 
 ```bash
 # See exactly what would happen on this node — changes nothing
-bin/migrate-disks.sh -s local-lvm -t ssd-pool -n
+bin/proxmox-storage-migrate -s local-lvm -t ssd-pool -n
 
 # Migrate this node's guests, 5 in parallel
-bin/migrate-disks.sh -s local-lvm -t ssd-pool
+bin/proxmox-storage-migrate -s local-lvm -t ssd-pool
 
 # Whole cluster, VMs only, 8 in parallel, auto-handle TPM state
-bin/migrate-disks.sh -A -V -S -p 8 -s ceph -t ssd-pool
+bin/proxmox-storage-migrate -A -V -S -p 8 -s ceph -t ssd-pool
 
 # Keep the source copies (don't delete after move)
-bin/migrate-disks.sh -s a -t b -k
+bin/proxmox-storage-migrate -s a -t b -k
 ```
 
 ## Config file

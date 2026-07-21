@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# migrate-disks.sh
+# proxmox-storage-migrate
 #
 # Mass-migrate every VM disk AND container volume on a source Proxmox storage
 # to a target storage.
@@ -25,7 +25,7 @@
 #
 # Run this ON a Proxmox host as root.
 #
-# Usage: migrate-disks [options]
+# Usage: proxmox-storage-migrate [options]
 #   -s <storage>  Source storage         (required)
 #   -t <storage>  Target storage         (required)
 #   -f <format>   Preferred VM format     (default: qcow2; auto-falls back to raw)
@@ -68,7 +68,7 @@ fi
 # ---- help -----------------------------------------------------------------
 usage() {
   cat <<'USAGE'
-Usage: migrate-disks [options]
+Usage: proxmox-storage-migrate [options]
   -s <storage>  Source storage         (required)
   -t <storage>  Target storage         (required)
   -f <format>   Preferred VM format     (default: qcow2; auto-falls back to raw)
@@ -133,7 +133,7 @@ DST_TYPE="$(get_storage_type "$DST_STORAGE")"
 
 # ---- logging setup --------------------------------------------------------
 TS="$(date +%Y%m%d-%H%M%S)"
-LOGDIR="/var/log/migrate-disks-$TS-$$"
+LOGDIR="/var/log/proxmox-storage-migrate-$TS-$$"
 mkdir -p "$LOGDIR/results" "$LOGDIR/results-deferred"
 DEFERRED_LIST="$LOGDIR/deferred.list"; : > "$DEFERRED_LIST"
 DEFERRED_CT_LIST="$LOGDIR/deferred-ct.list"; : > "$DEFERRED_CT_LIST"
