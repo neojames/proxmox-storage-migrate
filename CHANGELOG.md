@@ -2,6 +2,30 @@
 
 All notable changes to this project are documented here.
 
+## [1.2.0]
+
+### Changed
+- `-s`/`-t` no longer have defaults — they're required, from *some* source
+  (a flag or the new config file below). Omitting both fails fast with a
+  clear error and the usage text, instead of falling through to a confusing
+  "storage '' not defined" error.
+- **Breaking:** the installed command is now `proxmox-storage-migrate` (was
+  `migrate-disks`), matching the package/repo name. The source script is
+  likewise `bin/proxmox-storage-migrate`, the man page is
+  `proxmox-storage-migrate(1)`, and per-run logs move to
+  `/var/log/proxmox-storage-migrate-<timestamp>-<pid>/`. Update any scripts,
+  cron jobs, or aliases that invoke `migrate-disks`.
+
+### Added
+- `/etc/default/proxmox-storage-migrate`: an optional config file setting
+  new defaults for any flag (`SRC_STORAGE`, `FORMAT`, `MAX_PARALLEL`, …).
+  Precedence is built-in default < config file < command-line flag. Ships
+  commented-out via the `.deb`; template also at
+  `config/proxmox-storage-migrate.default` for checkout installs.
+
+Shipped incrementally for testing as `1.2.0-beta.1` through `1.2.0-beta.4`
+below.
+
 ## [1.2.0-beta.4]
 
 Beta: tagged for testing. See the [1.2.0-beta.3](#120-beta3) entry below for

@@ -1,3 +1,16 @@
+proxmox-storage-migrate (1.2.0) unstable; urgency=medium
+
+  * -s/-t are now required (from a flag or the config file below); they no
+    longer default to empty and silently fail deep in storage.cfg lookup.
+  * Add /etc/default/proxmox-storage-migrate: an optional config file
+    setting new defaults for any flag. Command-line flags still override it.
+  * Breaking: the installed command is now /usr/bin/proxmox-storage-migrate
+    (was /usr/bin/migrate-disks), matching the package/repo name. The source
+    script, man page, and per-run log directory prefix are renamed to match.
+  * Shipped incrementally for testing as 1.2.0-beta.1 through 1.2.0-beta.4.
+
+ -- James Bolton <james@neojames.me>  Tue, 21 Jul 2026 19:30:00 +0100
+
 proxmox-storage-migrate (1.2.0-beta.4) unstable; urgency=medium
 
   * Breaking: the installed command is now /usr/bin/proxmox-storage-migrate
