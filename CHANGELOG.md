@@ -20,6 +20,9 @@ All notable changes to this project are documented here.
   (`neojames.github.io/proxmox-storage-migrate`): every tagged release is
   added automatically, so installed hosts pick up updates with a plain
   `apt update && apt upgrade` instead of re-downloading a `.deb` by hand.
+- `install.sh`: one-line `curl | bash` installer that sets up the apt repo
+  (verifying the signing key's fingerprint), runs `apt-get update`, and
+  installs the package.
 
 ## [1.0.0]
 Initial release. A single Bash tool to bulk-migrate Proxmox VE guest storage.

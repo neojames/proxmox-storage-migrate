@@ -120,6 +120,13 @@ an env with the `mock_add_*` helpers, call `mock_run <args>`, and assert with
   - The publish step needs a second checkout (`ref: gh-pages, path: gh-pages`)
     alongside the main one, and pushes back to `gh-pages` using the default
     `GITHUB_TOKEN` (needs `permissions: contents: write` on the workflow).
+- `install.sh` (repo root) is the curl-pipe-to-bash installer: adds the apt
+  repo (verifying the downloaded key's fingerprint against a hardcoded
+  `EXPECTED_FINGERPRINT` before trusting it — bump that constant if the
+  signing key is ever rotated), runs `apt-get update`, installs the package.
+  It's fetched from `raw.githubusercontent.com` (main branch), not published
+  via the release pipeline, so edits take effect immediately on push — no tag
+  needed. Keep it in the CI/release shellcheck file lists.
 
 ## Safety
 

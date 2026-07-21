@@ -59,6 +59,15 @@ so hosts can just `apt upgrade` to pick up new versions. On the Proxmox host,
 as root:
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/neojames/proxmox-storage-migrate/main/install.sh | bash
+```
+
+This adds the apt repo (verifying the signing key's fingerprint before
+trusting it), runs `apt update`, and installs the package — safe to re-run any
+time to pick up a new release. Prefer to do it by hand, or can't pipe a script
+into `bash`? Same three steps, spelled out:
+
+```bash
 curl -fsSL https://neojames.github.io/proxmox-storage-migrate/KEY.gpg \
   -o /usr/share/keyrings/proxmox-storage-migrate.gpg
 

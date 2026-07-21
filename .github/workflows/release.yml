@@ -24,6 +24,7 @@ jobs:
         run: |
           shellcheck -x --severity=warning \
             bin/migrate-disks.sh \
+            install.sh \
             tests/run-tests.sh \
             tests/lib/mocks.sh \
             tests/test_*.sh
