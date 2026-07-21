@@ -1,0 +1,46 @@
+name: Publish GitHub Pages
+
+# release.yml commits the apt repo (dists/, pool/, KEY.gpg/.asc, index.html)
+# to the gh-pages branch as plain files. GitHub's own "Deploy from a branch"
+# Pages source already serves that automatically via an auto-generated
+# workflow we don't control — and which nags with Node.js 20 deprecation
+# warnings from actions pinned inside it that we can't touch. This workflow
+# replaces that: it (re)deploys the current gh-pages content through
+# GitHub's Actions-based Pages pipeline, using actions we pin ourselves.
+# Requires the repo's Pages source to be set to "GitHub Actions" (build_type
+# "workflow") rather than "Deploy from a branch".
+
+on:
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

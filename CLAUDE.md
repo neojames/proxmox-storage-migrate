@@ -150,6 +150,15 @@ to exercise what happens with genuinely nothing on the command line.
   - The publish step needs a second checkout (`ref: gh-pages, path: gh-pages`)
     alongside the main one, and pushes back to `gh-pages` using the default
     `GITHUB_TOKEN` (needs `permissions: contents: write` on the workflow).
+- Serving `gh-pages`: `.github/workflows/pages.yml` (re)deploys the current
+  `gh-pages` content via GitHub's Actions-based Pages pipeline
+  (`actions/upload-pages-artifact` + `actions/deploy-pages`), triggered
+  automatically after `release.yml` finishes (`workflow_run`) or manually
+  (`workflow_dispatch`). This requires the repo's Pages source (Settings →
+  Pages) to be set to **GitHub Actions**, not "Deploy from a branch" — the
+  latter's auto-generated workflow works too, but is entirely GitHub-owned
+  (not a file in this repo) and pins its own actions, so its Node.js
+  deprecation warnings aren't ours to fix.
 - **Beta tags**: `X.Y.Z-beta.N` (e.g. `1.2.0-beta.1`) — deliberately *not*
   `v`-prefixed, so `release.yml`'s `v*` trigger never fires for them (defense
   in depth: its trigger also explicitly excludes `!*-beta*`). These run
