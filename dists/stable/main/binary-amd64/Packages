@@ -48,3 +48,28 @@ Description: Bulk-migrate Proxmox VE guest storage between storages
  .
  Must be run as root on a Proxmox VE host (needs qm and/or pct).
 
+Package: proxmox-storage-migrate
+Version: 1.2.2
+Architecture: all
+Maintainer: James Bolton <james@neojames.me>
+Installed-Size: 58
+Depends: python3, openssh-client
+Filename: pool/main/p/proxmox-storage-migrate/proxmox-storage-migrate_1.2.2_all.deb
+Size: 23376
+MD5sum: 94bc001f5975628d64e93a5e9cbd57bf
+SHA1: 6e8800e41ddf790f132a6a657f26f385caa3c369
+SHA256: 99170a3dcdfb404efc963073d1a3fe06f3f250ca5abb9ef7abe61109621734ed
+Section: admin
+Priority: optional
+Homepage: https://github.com/neojames/proxmox-storage-migrate
+Description: Bulk-migrate Proxmox VE guest storage between storages
+ proxmox-storage-migrate bulk-migrates Proxmox VE guest storage (VM disks and
+ container volumes) from one storage to another, optionally across an
+ entire cluster, in parallel.
+ .
+ It wraps qm move-disk and pct move-volume with discovery, parallelism,
+ QCOW2/raw format handling, TPM state and container shutdown handling,
+ per-move verification, and logging.
+ .
+ Must be run as root on a Proxmox VE host (needs qm and/or pct).
+
