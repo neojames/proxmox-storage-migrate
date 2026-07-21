@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented here.
 
+## [1.2.3]
+
+### Fixed
+- A VM's cloud-init drive was never discovered or migrated. Proxmox marks
+  cloud-init drives with `media=cdrom` in the guest config, same as a real
+  CD-ROM/ISO — discovery's blanket "skip anything with media=cdrom" check
+  (meant to ignore empty/ISO CD-ROM drives) was silently dropping cloud-init
+  drives too. They're now distinguished by Proxmox's own always-`*-cloudinit`
+  volume naming: cloud-init drives are discovered and moved like any other
+  disk, while real CD-ROM/ISO drives are still correctly skipped.
+
 ## [1.2.2]
 
 ### Added

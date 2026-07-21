@@ -73,6 +73,14 @@ _mock_find_conf() {
   ls "$MOCK_PVE"/nodes/*/{qemu-server,lxc}/"$1".conf 2>/dev/null | head -1
 }
 
+# Portable in-place sed: GNU sed treats `-i`'s suffix as optional, but
+# BSD/macOS sed requires it as a separate argument — plain `-i -E ...`
+# makes BSD sed silently consume `-E` as that suffix instead of a flag,
+# so the substitution runs in basic (not extended) regex mode and silently
+# no-ops. An attached, non-empty suffix (`-i.bak`) parses identically on
+# both, so use that and discard the backup.
+_mock_sed_i() { sed -i.bak -E "$1" "$2" && rm -f "$2.bak"; }
+
 # --- command stubs ---------------------------------------------------------
 # Each records to $MOCK_CALLS and mutates the fake tree so the script's own
 # verify step (which re-reads the config) sees a completed move.
@@ -97,7 +105,7 @@ qm() {
       if [ "${MOCK_REJECT_QCOW2:-0}" = 1 ] && printf '%s' "$*" | grep -q 'qcow2'; then
         echo "storage does not support format 'qcow2'"; return 255
       fi
-      sed -i -E "s#^($key: )Neohosting:#\1TN01SSD1600-NeoHosting:#" "$(_mock_find_conf "$id")"; return 0 ;;
+      _mock_sed_i "s#^($key: )Neohosting:#\1TN01SSD1600-NeoHosting:#" "$(_mock_find_conf "$id")"; return 0 ;;
     *) return 0 ;;
   esac
 }
@@ -117,7 +125,7 @@ pct() {
     move-volume)
       local id="$1" key="$2"; shift 2
       echo "MOVE-VOL $id $key [$*] running=$(cat "$MOCK_STATE/$id" 2>/dev/null)" >> "$MOCK_CALLS"
-      sed -i -E "s#^($key: )Neohosting:#\1TN01SSD1600-NeoHosting:#" "$(_mock_find_conf "$id")"; return 0 ;;
+      _mock_sed_i "s#^($key: )Neohosting:#\1TN01SSD1600-NeoHosting:#" "$(_mock_find_conf "$id")"; return 0 ;;
     *) return 0 ;;
   esac
 }
@@ -138,7 +146,7 @@ ssh() {
   "$@"
 }
 
-export -f qm pct ssh _mock_find_conf
+export -f qm pct ssh _mock_find_conf _mock_sed_i
 
 # mock_set_config <content>  — write /etc/default/proxmox-storage-migrate
 # (as seen by the script under test) with the given content. Without this,

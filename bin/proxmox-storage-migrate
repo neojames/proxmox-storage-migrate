@@ -232,7 +232,10 @@ scan_conf() {  # $1=conf file  $2=vm|ct  $3=unit-prefix (type:node)
     [[ "$line" =~ ^\[ ]] && break                 # stop at first snapshot section
     [[ "$line" =~ $re ]] || continue
     key="${line%%:*}"; val="${line#*: }"; vol="${val%%,*}"
-    [[ "$val" == *"media=cdrom"* ]] && continue
+    # media=cdrom covers both real CD-ROM/ISO drives (skip) and cloud-init
+    # drives (don't skip — Proxmox represents them as a cdrom-media disk too,
+    # but they're a real, migratable volume; always named *-cloudinit).
+    [[ "$val" == *"media=cdrom"* && "$vol" != *cloudinit* ]] && continue
     [[ "$vol" == "none" ]] && continue
     [[ "$vol" == "${SRC_STORAGE}:"* ]] || continue   # bind mounts / other storages skipped
     add_vol "$prefix:$id" "$key $vol" "$kind"

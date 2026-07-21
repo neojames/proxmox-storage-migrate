@@ -29,7 +29,7 @@ qm() {
       echo "START $id $(date +%s.%N)" >> "$MOCK_CALLS"
       sleep 0.3
       echo "END $id $(date +%s.%N)" >> "$MOCK_CALLS"
-      sed -i -E "s#^($key: )Neohosting:#\1TN01SSD1600-NeoHosting:#" "$(_mock_find_conf "$id")"; return 0 ;;
+      _mock_sed_i "s#^($key: )Neohosting:#\1TN01SSD1600-NeoHosting:#" "$(_mock_find_conf "$id")"; return 0 ;;
     status) echo "status: running" ;;
     *) return 0 ;;
   esac

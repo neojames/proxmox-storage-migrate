@@ -1,3 +1,13 @@
+proxmox-storage-migrate (1.2.3) unstable; urgency=medium
+
+  * Fix: cloud-init drives (media=cdrom, like a real CD-ROM, but a real
+    migratable volume named *-cloudinit) were never discovered or migrated
+    — discovery's CD-ROM/ISO skip check was catching them too. Now
+    distinguished by Proxmox's always-*-cloudinit volume naming; real
+    CD-ROM/ISO drives are still correctly skipped.
+
+ -- James Bolton <james@neojames.me>  Tue, 21 Jul 2026 21:00:00 +0100
+
 proxmox-storage-migrate (1.2.2) unstable; urgency=medium
 
   * Docs only: README's Usage/Examples now show the installed command name
