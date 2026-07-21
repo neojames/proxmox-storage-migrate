@@ -94,6 +94,33 @@ an env with the `mock_add_*` helpers, call `mock_run <args>`, and assert with
 - Per-run state goes under a unique `LOGDIR` (timestamp + PID) so concurrent or
   same-second invocations don't collide.
 
+## Packaging & releases
+
+- `debian/` packages `bin/migrate-disks.sh` as `/usr/bin/migrate-disks` (a
+  standard `debhelper` package; `man/migrate-disks.1` ships as its man page).
+  `debian/changelog`'s top version must match the git tag being released —
+  bump both together, and keep `CHANGELOG.md` in sync.
+- Pushing a `v*` tag runs `.github/workflows/release.yml`, which: re-lints and
+  re-tests, checks the tag against `debian/changelog`, builds the `.deb` with
+  `dpkg-buildpackage`, attaches it to a GitHub Release, then publishes it to a
+  self-hosted apt repo on the `gh-pages` branch (served via GitHub Pages at
+  `neojames.github.io/proxmox-storage-migrate/`):
+  - `pool/main/p/proxmox-storage-migrate/` accumulates every released `.deb`;
+    `dists/stable/main/binary-all/Packages(.gz)` is regenerated from the whole
+    pool each time via `dpkg-scanpackages --multiversion` (so old versions
+    stay installable by exact version, `apt upgrade` still finds the newest).
+  - `dists/stable/Release` is hand-built (no `apt-ftparchive`, to avoid an
+    extra dependency) and signed twice — clearsigned as `InRelease`, and
+    detached as `Release.gpg` — for compatibility with both old and new apt.
+  - Signing key: a repo-dedicated GPG key (not personal), private half in the
+    `APT_SIGNING_KEY` repo secret, public half published as `KEY.gpg`/`KEY.asc`
+    at the Pages root. Rotating it means regenerating the key, updating the
+    secret, and re-publishing `KEY.*` — old signatures on already-published
+    releases don't get retroactively re-signed.
+  - The publish step needs a second checkout (`ref: gh-pages, path: gh-pages`)
+    alongside the main one, and pushes back to `gh-pages` using the default
+    `GITHUB_TOKEN` (needs `permissions: contents: write` on the workflow).
+
 ## Safety
 
 This tool deletes source volumes by default (`--delete`, unless `-k`) and can

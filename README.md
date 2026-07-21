@@ -52,20 +52,40 @@ every disk of every guest by hand.
 
 ## Installation
 
-### From a `.deb` (recommended)
+### From the apt repo (recommended)
 
-Every tagged release publishes a `.deb` on the
-[Releases page](https://github.com/neojames/proxmox-storage-migrate/releases).
-On the Proxmox host, as root:
+Every tagged release is published to a self-hosted apt repo on GitHub Pages,
+so hosts can just `apt upgrade` to pick up new versions. On the Proxmox host,
+as root:
+
+```bash
+curl -fsSL https://neojames.github.io/proxmox-storage-migrate/KEY.gpg \
+  -o /usr/share/keyrings/proxmox-storage-migrate.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/proxmox-storage-migrate.gpg] https://neojames.github.io/proxmox-storage-migrate/ stable main" \
+  > /etc/apt/sources.list.d/proxmox-storage-migrate.list
+
+apt update
+apt install proxmox-storage-migrate
+```
+
+From then on, `apt update && apt upgrade` picks up new releases. Packages are
+signed with a repo-dedicated GPG key (not tied to any personal identity).
+
+This installs the tool as `migrate-disks` on your `PATH`, plus a man page
+(`man migrate-disks`). From here on, replace `bin/migrate-disks.sh` in the
+examples below with `migrate-disks`.
+
+### From a standalone `.deb`
+
+Every tagged release also publishes the `.deb` directly on the
+[Releases page](https://github.com/neojames/proxmox-storage-migrate/releases),
+for hosts that can't reach the apt repo:
 
 ```bash
 wget https://github.com/neojames/proxmox-storage-migrate/releases/download/vX.Y.Z/proxmox-storage-migrate_X.Y.Z_all.deb
 apt install ./proxmox-storage-migrate_X.Y.Z_all.deb
 ```
-
-This installs the tool as `migrate-disks` on your `PATH`, plus a man page
-(`man migrate-disks`). From here on, replace `bin/migrate-disks.sh` in the
-examples below with `migrate-disks`.
 
 To build the `.deb` yourself instead: `dpkg-buildpackage -us -uc -b` from a
 checkout (needs `debhelper` and `devscripts`).

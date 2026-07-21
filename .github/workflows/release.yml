@@ -18,7 +18,7 @@ jobs:
       - name: Install build and test dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential debhelper devscripts dpkg-dev shellcheck
+          sudo apt-get install -y build-essential debhelper devscripts dpkg-dev gnupg shellcheck
 
       - name: Lint
         run: |
@@ -52,3 +52,69 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release create "$GITHUB_REF_NAME" dist/*.deb --title "$GITHUB_REF_NAME" --generate-notes
+
+      - name: Checkout apt repo (gh-pages)
+        uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Import apt repo signing key
+        env:
+          APT_SIGNING_KEY: ${{ secrets.APT_SIGNING_KEY }}
+        run: |
+          echo "$APT_SIGNING_KEY" | gpg --batch --import
+          echo "GPG_KEY_ID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/{print $5; exit}')" >> "$GITHUB_ENV"
+
+      - name: Add package to apt repo pool
+        run: |
+          mkdir -p gh-pages/pool/main/p/proxmox-storage-migrate
+          cp dist/*.deb gh-pages/pool/main/p/proxmox-storage-migrate/
+
+      - name: Regenerate apt repo indices
+        run: |
+          cd gh-pages
+          mkdir -p dists/stable/main/binary-all
+          dpkg-scanpackages --multiversion pool /dev/null \
+            > dists/stable/main/binary-all/Packages
+          gzip -9 -k -f dists/stable/main/binary-all/Packages
+
+          {
+            echo "Origin: proxmox-storage-migrate"
+            echo "Label: proxmox-storage-migrate"
+            echo "Suite: stable"
+            echo "Codename: stable"
+            echo "Architectures: all"
+            echo "Components: main"
+            echo "Date: $(date -u '+%a, %d %b %Y %H:%M:%S UTC')"
+          } > dists/stable/Release
+
+          gen_hashes() {
+            local field="$1" cmd="$2"
+            echo "$field:" >> dists/stable/Release
+            for f in main/binary-all/Packages main/binary-all/Packages.gz; do
+              size=$(stat -c%s "dists/stable/$f")
+              hash=$($cmd "dists/stable/$f" | awk '{print $1}')
+              printf ' %s %16d %s\n' "$hash" "$size" "$f" >> dists/stable/Release
+            done
+          }
+          gen_hashes MD5Sum md5sum
+          gen_hashes SHA1 sha1sum
+          gen_hashes SHA256 sha256sum
+
+      - name: Sign apt repo
+        run: |
+          cd gh-pages
+          gpg --batch --yes --local-user "$GPG_KEY_ID" --clearsign \
+            -o dists/stable/InRelease dists/stable/Release
+          gpg --batch --yes --local-user "$GPG_KEY_ID" -abs \
+            -o dists/stable/Release.gpg dists/stable/Release
+
+      - name: Publish apt repo
+        run: |
+          cd gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pool dists
+          git commit -m "Publish $GITHUB_REF_NAME to apt repo"
+          git push

@@ -16,6 +16,10 @@ All notable changes to this project are documented here.
 - Debian packaging (`debian/`): installs as `/usr/bin/migrate-disks`, with a
   man page and `Depends` on `python3`/`openssh-client`. Pushing a `v*` tag
   builds the `.deb` and attaches it to a GitHub Release.
+- Self-hosted, GPG-signed apt repo published to GitHub Pages
+  (`neojames.github.io/proxmox-storage-migrate`): every tagged release is
+  added automatically, so installed hosts pick up updates with a plain
+  `apt update && apt upgrade` instead of re-downloading a `.deb` by hand.
 
 ## [1.0.0]
 Initial release. A single Bash tool to bulk-migrate Proxmox VE guest storage.
