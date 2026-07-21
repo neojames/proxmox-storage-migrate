@@ -127,11 +127,16 @@ beyond `bash`, `python3`, and (for cluster mode) `openssh-client`.
 
 ### Beta builds
 
-Tags like `1.2.0-beta.1` (no `v` prefix) build a `.deb` and attach it to that
-[Actions run](https://github.com/neojames/proxmox-storage-migrate/actions/workflows/beta.yml)
-as a downloadable artifact — for testing an in-progress version before it
-ships. Unlike a real `vX.Y.Z` tag, a beta tag never creates a GitHub Release
-or touches the apt repo.
+Tags like `1.2.0-beta.1` (no `v` prefix) build a `.deb` and attach it to a
+[GitHub Release](https://github.com/neojames/proxmox-storage-migrate/releases)
+marked **Pre-release**, for testing an in-progress version before it ships.
+Unlike a real `vX.Y.Z` tag, a beta tag never touches the apt repo — install
+the `.deb` directly instead:
+
+```bash
+wget https://github.com/neojames/proxmox-storage-migrate/releases/download/1.2.0-beta.1/proxmox-storage-migrate_1.2.0-beta.1_all.deb
+apt install ./proxmox-storage-migrate_1.2.0-beta.1_all.deb
+```
 
 ## Usage
 

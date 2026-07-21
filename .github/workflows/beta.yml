@@ -1,10 +1,10 @@
 name: Beta build
 
 # Beta tags (e.g. 1.2.0-beta.1 — deliberately NOT v-prefixed, so release.yml's
-# `v*` trigger never fires for them) get a .deb built and attached to the
-# workflow run as a downloadable artifact. Unlike release.yml, this never
-# creates a GitHub Release or touches the apt repo on gh-pages — a beta tag
-# is for testing, not distribution.
+# `v*` trigger never fires for them) get a .deb built and attached to a
+# GitHub Release marked as a pre-release, for a stable, no-auth-needed
+# download link. Unlike release.yml, this never touches the apt repo on
+# gh-pages — a beta tag is for testing, not distribution via apt.
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
       - '*-beta*'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-deb:
@@ -54,9 +54,11 @@ jobs:
           mkdir -p dist
           mv ../proxmox-storage-migrate_*.deb dist/
 
-      - name: Upload .deb as a workflow artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: proxmox-storage-migrate_${{ github.ref_name }}
-          path: dist/*.deb
-          retention-days: 30
+      - name: Create pre-release with the .deb attached
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/*.deb \
+            --title "$GITHUB_REF_NAME (beta)" \
+            --notes "Beta build for testing — not published to the apt repo. Built from commit $GITHUB_SHA." \
+            --prerelease

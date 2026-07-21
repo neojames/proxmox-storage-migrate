@@ -148,10 +148,11 @@ to exercise what happens with genuinely nothing on the command line.
   `v`-prefixed, so `release.yml`'s `v*` trigger never fires for them (defense
   in depth: its trigger also explicitly excludes `!*-beta*`). These run
   `.github/workflows/beta.yml` instead: same lint/test/changelog-version
-  checks and `dpkg-buildpackage`, but the `.deb` is only uploaded as a
-  workflow artifact (`actions/upload-artifact`, 30-day retention) — no
-  GitHub Release, no apt-repo publish. **Never push a tag combining both**
-  (e.g. `v1.2.0-beta.1`) — it would match both triggers.
+  checks and `dpkg-buildpackage`, and the `.deb` *is* attached to a GitHub
+  Release for a stable, no-auth download link — but that release is created
+  with `--prerelease` (so it's visually distinct from real releases and never
+  becomes "Latest") and the apt-repo publish steps don't run. **Never push a
+  tag combining both** (e.g. `v1.2.0-beta.1`) — it would match both triggers.
 - `install.sh` (repo root) is the curl-pipe-to-bash installer: adds the apt
   repo (verifying the downloaded key's fingerprint against a hardcoded
   `EXPECTED_FINGERPRINT` before trusting it — bump that constant if the

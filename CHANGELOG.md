@@ -4,10 +4,10 @@ All notable changes to this project are documented here.
 
 ## [1.2.0-beta.2]
 
-Beta: tagged for testing. A `*-beta*` tag builds the `.deb` and attaches it
-to the workflow run as a downloadable artifact, but — unlike a `v*` tag —
-never creates a GitHub Release or publishes to the apt repo. (`-beta.1` predates
-that pipeline and never got a `.deb` built; no functional changes since then.)
+Beta: tagged for testing. A `*-beta*` tag builds the `.deb` and attaches it to
+a GitHub Release marked **Pre-release** (a stable, no-auth download link) —
+but unlike a `v*` tag, never publishes it to the apt repo. (`-beta.1` predates
+this pipeline and never got a `.deb` built; no functional changes since then.)
 
 ### Changed
 - `-s`/`-t` no longer have defaults — they're required, from *some* source
