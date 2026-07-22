@@ -1,0 +1,12 @@
+# Dependabot ecosystems this repo actually has: just GitHub Actions. There's
+# no npm/pip/cargo/etc. — this is a pure Bash tool; python3 is used only as a
+# runtime interpreter (inline stdlib-only scripts), not via a package
+# manager. Debian build/runtime deps (python3, openssh-client, debhelper,
+# devscripts, shellcheck) are resolved by apt on the target host/in CI and
+# aren't a Dependabot-supported ecosystem.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

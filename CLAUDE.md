@@ -195,6 +195,11 @@ to exercise what happens with genuinely nothing on the command line.
     `ssh_node` in the main script); `--no-cluster-prompt` stops that remote
     leg from asking again and fanning out further. A single-node host (or a
     non-Proxmox host) sees none of this — the check is skipped outright.
+- `.github/dependabot.yml` covers `github-actions` only (the versions pinned
+  in `.github/workflows/*.yml`) — the only ecosystem this repo actually has.
+  No npm/pip/etc.: this is a pure Bash tool, and the Debian build/runtime
+  deps (`python3`, `openssh-client`, `debhelper`, `shellcheck`, …) are apt
+  packages, not something Dependabot tracks.
 
 ## Safety
 
